@@ -8,5 +8,6 @@ import "./styles.css";
 import "vfonts/Lato.css";
 // 等宽字体
 import "vfonts/FiraCode.css";
+import router from "./router";
 
-createApp(App).mount("#app");
+createApp(App).use(router).mount("#app");
