@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import path from "path";
 import vue from "@vitejs/plugin-vue";
 import unoCSS from "unocss/vite";
 
@@ -21,7 +22,7 @@ export default defineConfig(async () => ({
 
   resolve: {
     alias: {
-      "@": "./src",
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 }));

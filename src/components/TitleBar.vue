@@ -1,23 +1,35 @@
 <script lang="ts" setup>
 import { appWindow } from "@tauri-apps/api/window";
 import { NIcon, NButton, NSpace } from "naive-ui";
-import { MinimizeRound, MaximizeRound, CloseRound } from "@vicons/material";
+import {
+  MinimizeRound,
+  MaximizeRound,
+  CloseRound,
+  ArrowBackRound,
+} from "@vicons/material";
+import { useRouter } from "vue-router";
 
 defineProps<{
   title: string;
 }>();
+
+const router = useRouter();
 </script>
 
 <template>
-  <div
-    data-tauri-drag-region
-    class="px-5 py-3 flex justify-between items-center gap-3 b-b"
-  >
+  <div data-tauri-drag-region class="px-5 py-3 flex items-center gap-3 b-b">
+    <!-- 返回按钮 -->
+    <NButton class="shrink-0" quaternary circle @click="router.back()">
+      <template #icon>
+        <NIcon><ArrowBackRound /></NIcon>
+      </template>
+    </NButton>
+
     <!-- 标题 -->
-    <h1 class="text-xl">{{ title }}</h1>
+    <h1 data-tauri-drag-region class="grow basis-0 text-xl">{{ title }}</h1>
 
     <!-- 操作 -->
-    <NSpace>
+    <NSpace class="shrink-0">
       <!-- 最小化 -->
       <NButton
         strong
