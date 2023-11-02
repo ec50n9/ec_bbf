@@ -1,6 +1,4 @@
-<script lang="ts" setup>
-import { useRouter } from "vue-router";
-</script>
+<script lang="ts" setup></script>
 
 <template>
   <div>
