@@ -1,14 +1,16 @@
-use rusqlite::{Connection, Result};
+use rusqlite::{params_from_iter, Connection, Result};
 use serde::{Deserialize, Serialize};
 
+/// 学生结构体
 #[derive(Serialize, Deserialize)]
 pub struct Student {
-    pub id: String,
-    pub stu_no: String,
-    pub name: String,
-    pub is_delete: bool,
+    id: String,
+    stu_no: String,
+    name: String,
+    is_delete: bool,
 }
 
+/// 初始化数据库
 pub fn init_db() -> Result<Connection> {
     let db_path = "db.sqlite";
     let conn = Connection::open(db_path)?;
@@ -24,14 +26,17 @@ pub fn init_db() -> Result<Connection> {
     Ok(conn)
 }
 
+/// 获取全部学生
 #[tauri::command]
-pub fn get_list(state: tauri::State<'_, crate::AppState>) -> Vec<Student> {
-    let conn = state.db_conn.lock().unwrap();
+pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<Student>, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    let mut stmt = conn.prepare("SELECT * FROM student").unwrap();
+    let mut stmt = conn
+        .prepare("SELECT * FROM student")
+        .expect("sql预处理出错");
     let students_iter = stmt
         .query_map([], |row| {
-            let is_delete = row.get::<usize, i32>(3).unwrap() == 1;
+            let is_delete = row.get::<usize, i32>(3).expect("获取 is_delete 失败") == 1;
 
             Ok(Student {
                 id: row.get(0)?,
@@ -40,30 +45,99 @@ pub fn get_list(state: tauri::State<'_, crate::AppState>) -> Vec<Student> {
                 is_delete,
             })
         })
-        .unwrap()
+        .expect("转换结果出错")
         .map(|item| item.unwrap());
 
-    students_iter.collect::<Vec<Student>>()
+    Ok(students_iter.collect::<Vec<Student>>())
 }
 
-#[tauri::command]
-pub fn create(state: tauri::State<'_, crate::AppState>, student: Student) -> bool {
-    let conn = state.db_conn.lock().unwrap();
+/// 用于创建学生的结构体
+#[derive(Serialize, Deserialize)]
+pub struct StudentCreateVO {
+    id: String,
+    stu_no: String,
+    name: String,
+}
 
-    let Student {
-        id, stu_no, name, ..
-    } = student;
+/// 创建学生
+#[tauri::command]
+pub fn create_student(
+    state: tauri::State<'_, crate::AppState>,
+    student_create_vo: StudentCreateVO,
+) -> Result<i64, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let StudentCreateVO { id, stu_no, name } = student_create_vo;
     let mut stmt = conn
         .prepare("INSERT INTO student (id, stu_no, name) VALUES (?, ?, ?)")
-        .unwrap();
-    match stmt.insert([id, stu_no, name]) {
-        Ok(insert) => {
-            println!("{} row inserted", insert);
-            true
-        }
-        Err(err) => {
-            println!("some error: {}", err);
-            false
-        }
+        .expect("sql预处理出错");
+    let rows = stmt.insert([id, stu_no, name]).expect("");
+    Ok(rows)
+}
+
+/// 用于更新学生信息的结构体
+#[derive(Serialize, Deserialize)]
+pub struct StudentUpdateVO {
+    id: String,
+    stu_no: Option<String>,
+    name: Option<String>,
+}
+
+/// 更新学生
+#[tauri::command]
+pub fn update_student(
+    state: tauri::State<'_, crate::AppState>,
+    student_update_vo: StudentUpdateVO,
+) -> Result<usize, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let StudentUpdateVO { id, stu_no, name } = student_update_vo;
+
+    // 字段sql
+    let mut update_fields = Vec::new();
+    // 参数值
+    let mut params = Vec::new();
+
+    // 添加参数
+    if let Some(stu_no) = stu_no {
+        update_fields.push("stu_no = ?");
+        params.push(stu_no);
     }
+    if let Some(name) = name {
+        update_fields.push("name = ?");
+        params.push(name);
+    }
+    params.push(id);
+
+    // 组装sql
+    let query_sql = format!(
+        "UPDATE student SET {} WHERE id = ?",
+        update_fields.join(", ")
+    );
+
+    // 预处理
+    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+    // 执行
+    let rows = stmt
+        .execute(params_from_iter(params.iter()))
+        .expect("更新失败");
+    Ok(rows)
+}
+
+/// 根据学生id删除学生
+#[tauri::command]
+pub fn delete_student(
+    state: tauri::State<'_, crate::AppState>,
+    id: String,
+) -> Result<usize, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    // 组装sql
+    let query_sql = format!("DELETE FROM student WHERE id = {}", id);
+
+    // 预处理
+    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+    // 执行
+    let rows = stmt.execute([]).expect("删除失败");
+    Ok(rows)
 }

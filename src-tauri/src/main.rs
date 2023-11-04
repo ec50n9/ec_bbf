@@ -32,7 +32,9 @@ fn main() {
             set_window_shadow(app);
             Ok(())
         })
-        .invoke_handler(register_handlers![student::{create, get_list}])
+        .invoke_handler(
+            register_handlers![student::{create_student, get_student_list, update_student, delete_student}],
+        )
         .manage(AppState {
             db_conn: Mutex::new(init_db().unwrap()),
         })
