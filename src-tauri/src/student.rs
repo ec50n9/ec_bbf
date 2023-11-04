@@ -53,10 +53,10 @@ pub fn create(state: tauri::State<'_, crate::AppState>, student: Student) -> boo
     let Student {
         id, stu_no, name, ..
     } = student;
-    match conn.execute(
-        "INSERT INTO student (id, stu_no, name) VALUES (?, ?, ?)",
-        [id, stu_no, name],
-    ) {
+    let mut stmt = conn
+        .prepare("INSERT INTO student (id, stu_no, name) VALUES (?, ?, ?)")
+        .unwrap();
+    match stmt.insert([id, stu_no, name]) {
         Ok(insert) => {
             println!("{} row inserted", insert);
             true

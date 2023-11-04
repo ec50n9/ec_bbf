@@ -1,24 +1,29 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod utils;
-
-use crate::utils::set_window_shadow;
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-// sqlite相关
+// 数据库相关
 mod student;
-use rusqlite::Connection;
 use std::sync::Mutex;
 use student::init_db;
 
+// 窗口阴影
+mod utils;
+use crate::utils::set_window_shadow;
+
+/** 应用状态 */
 pub struct AppState {
-    db_conn: Mutex<Connection>,
+    db_conn: Mutex<rusqlite::Connection>,
+}
+
+/** 自定义handler注册器，可以批量注册 */
+macro_rules! register_handlers {
+    ($( $module:ident :: { $( $handler:ident ),* } ),*) => {
+        tauri::generate_handler![
+            $(
+                $( $module::$handler ),*
+            ),*
+        ]
+    };
 }
 
 fn main() {
@@ -27,11 +32,7 @@ fn main() {
             set_window_shadow(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            greet,
-            student::get_list,
-            student::create
-        ])
+        .invoke_handler(register_handlers![student::{create, get_list}])
         .manage(AppState {
             db_conn: Mutex::new(init_db().unwrap()),
         })
