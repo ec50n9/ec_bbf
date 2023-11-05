@@ -14,6 +14,8 @@ export default defineConfig(async () => ({
     AutoImport({
       imports: [
         "vue",
+        "vue-router",
+        "pinia",
         {
           "naive-ui": [
             "useDialog",
@@ -23,9 +25,11 @@ export default defineConfig(async () => ({
           ],
         },
       ],
+      dts: "./src/types/auto-imports.d.ts",
     }),
     Components({
       resolvers: [NaiveUiResolver()],
+      dts: "./src/types/components.d.ts",
     }),
   ],
 

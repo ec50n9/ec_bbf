@@ -13,7 +13,7 @@ pub struct Student {
 
 /// 初始化数据库
 pub fn init_db() -> Result<Connection> {
-    let db_path = "db.sqlite";
+    let db_path = "D://db.sqlite";
     let conn = Connection::open(db_path)?;
     conn.execute(
         "CREATE TABLE IF NOT EXISTS student (
@@ -134,7 +134,7 @@ pub fn delete_student(
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     // 组装sql
-    let query_sql = format!("UPDATE student SET is_delete = 1 WHERE id = {}", id);
+    let query_sql = format!("UPDATE student SET is_delete = 1 WHERE id = '{}'", id);
 
     // 预处理
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");

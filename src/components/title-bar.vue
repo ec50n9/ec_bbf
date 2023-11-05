@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { appWindow } from "@tauri-apps/api/window";
-import { NIcon, NButton, NSpace } from "naive-ui";
 import {
   MinimizeRound,
   MaximizeRound,
@@ -17,11 +16,11 @@ const router = useRouter();
 </script>
 
 <template>
-  <div data-tauri-drag-region class="px-5 py-3 flex items-center gap-3 b-b">
+  <div data-tauri-drag-region class="px-5 py-2 flex items-center gap-3 b-b">
     <!-- 返回按钮 -->
     <NButton class="shrink-0" quaternary circle @click="router.back()">
       <template #icon>
-        <NIcon><ArrowBackRound /></NIcon>
+        <NIcon class="c-gray-7"><ArrowBackRound /></NIcon>
       </template>
     </NButton>
 
