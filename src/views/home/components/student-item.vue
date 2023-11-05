@@ -78,7 +78,7 @@ const handleMouseLeave = () => {
     <template #action>
       <n-collapse-transition :show="hovering">
         <n-space>
-          <n-button size="small" type="primary">
+          <n-button strong secondary size="small" type="primary" round>
             <template #icon>
               <n-icon><plus-icon /></n-icon>
             </template>

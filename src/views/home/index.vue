@@ -3,6 +3,10 @@ import * as StudentApi from "@/api/student";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
 import EditStudentForm from "./components/edit-student-form.vue";
+import {
+  PlusRound as PlusIcon,
+  FileUploadOutlined as UploadIcon,
+} from "@vicons/material";
 import { FormInst } from "naive-ui";
 
 const message = useMessage();
@@ -94,11 +98,17 @@ getStudentList();
             type="primary"
             @click="openCreateStudentForm"
           >
+            <template #icon>
+              <n-icon><plus-icon /></n-icon>
+            </template>
             添加
           </n-button>
         </n-form-item>
         <n-form-item>
           <n-button attr-type="button" type="info" @click="openUploadModal">
+            <template #icon>
+              <n-icon><upload-icon /></n-icon>
+            </template>
             导入
           </n-button>
         </n-form-item>
