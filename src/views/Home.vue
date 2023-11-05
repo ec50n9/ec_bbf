@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { invoke } from "@tauri-apps/api/tauri";
-import { NButton } from "naive-ui";
 
 const handleList = async () => {
   const res = await invoke("get_student_list", {});

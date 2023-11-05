@@ -2,10 +2,32 @@ import { defineConfig } from "vite";
 import path from "path";
 import vue from "@vitejs/plugin-vue";
 import unoCSS from "unocss/vite";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [vue(), unoCSS()],
+  plugins: [
+    vue(),
+    unoCSS(),
+    AutoImport({
+      imports: [
+        "vue",
+        {
+          "naive-ui": [
+            "useDialog",
+            "useMessage",
+            "useNotification",
+            "useLoadingBar",
+          ],
+        },
+      ],
+    }),
+    Components({
+      resolvers: [NaiveUiResolver()],
+    }),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
