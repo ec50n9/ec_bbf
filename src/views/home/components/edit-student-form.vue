@@ -1,23 +1,41 @@
 <script lang="ts" setup>
-import { StudentCreateVO } from "@/api/student";
+import { Student, StudentCreateVO, StudentUpdateVO } from "@/api/student";
 import { FormInst, FormRules } from "naive-ui";
-import { createStudent } from "@/api/student";
+import { createStudent, updateStudent, getStudentById } from "@/api/student";
 
 const emit = defineEmits<{
   (e: "success"): void;
 }>();
 
-const visible = ref(false);
-
 const message = useMessage();
 
+const visible = ref(false);
+
+type OpenType = "create" | "update";
+const openType = ref<OpenType>("create");
+const modalTitle = computed(
+  () =>
+    ({
+      create: "添加学生",
+      update: "编辑学生",
+    }[openType.value])
+);
+
 /** 打开弹窗 */
-const open = () => {
+const open = async (type: OpenType = "create", id?: Student["id"]) => {
+  openType.value = type;
+  resetForm();
   visible.value = true;
+
+  if (type === "update") {
+    if (!id) throw Error("请传入需要编辑的学生id");
+    model.value = await getStudentById(id);
+  }
 };
 defineExpose({ open });
 
-const model = ref<StudentCreateVO>({
+const model = ref<StudentCreateVO | StudentUpdateVO>({
+  id: "",
   name: "",
   stu_no: "",
 });
@@ -38,10 +56,16 @@ const resetForm = () => {
 const handleSubmit = () => {
   formRef.value?.validate(async (errors) => {
     if (!errors) {
-      await createStudent(model.value);
-      resetForm();
+      if (openType.value === "create") {
+        const vo = model.value as StudentCreateVO;
+        await createStudent(vo);
+        message.success("添加成功");
+      } else if (openType.value === "update") {
+        const vo = model.value as StudentUpdateVO;
+        await updateStudent(vo);
+        message.success("修改成功");
+      }
       visible.value = false;
-      message.success("添加成功");
       emit("success");
     }
   });
@@ -54,7 +78,7 @@ const handleSubmit = () => {
     v-model:show="visible"
     class="w-4/5 max-w-120"
     preset="card"
-    title="添加学生"
+    :title="modalTitle"
     size="medium"
     :bordered="false"
     :segmented="{
@@ -89,7 +113,7 @@ const handleSubmit = () => {
     <template #footer>
       <n-space justify="end">
         <n-button @click="visible = false">取消</n-button>
-        <n-button type="primary" @click="handleSubmit">添加</n-button>
+        <n-button type="primary" @click="handleSubmit">确定</n-button>
       </n-space>
     </template>
   </n-modal>

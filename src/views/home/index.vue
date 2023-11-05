@@ -2,14 +2,13 @@
 import * as StudentApi from "@/api/student";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
-import CreateStudentForm from "./components/create-student-form.vue";
+import EditStudentForm from "./components/edit-student-form.vue";
 import { FormInst } from "naive-ui";
 
 const message = useMessage();
 
 const studentList = ref<StudentApi.Student[]>([]);
 const getStudentList = async (query: StudentApi.StudentQueryVO = {}) => {
-  console.log("hello");
   studentList.value = await StudentApi.getStudentList(query);
 };
 
@@ -36,13 +35,24 @@ const validateQueryFormAndSearch = async () => {
   await getStudentList(queryFormValue.value);
 };
 
+// 编辑学生
+const handleEditStudent = (id: StudentApi.Student["id"]) =>
+  editStudentFormRef.value?.open("update", id);
+
+// 删除学生
+const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
+  await StudentApi.deleteStudent(id);
+  message.success("删除成功");
+  await getStudentList(queryFormValue.value);
+};
+
 // 上传导入弹窗
 const uploadModalRef = ref<typeof UploadModal>();
 const openUploadModal = () => uploadModalRef.value?.open();
 
 // 新建学生弹窗
-const createStudentFormRef = ref<typeof UploadModal>();
-const openCreateStudentForm = () => createStudentFormRef.value?.open();
+const editStudentFormRef = ref<typeof UploadModal>();
+const openCreateStudentForm = () => editStudentFormRef.value?.open("create");
 
 // 初始化
 getStudentList();
@@ -50,6 +60,7 @@ getStudentList();
 
 <template>
   <n-space class="p-3" vertical>
+    <!-- 搜索框 -->
     <n-space class="p-3 bg-white b rd-2">
       <n-form
         ref="queryFormRef"
@@ -94,19 +105,21 @@ getStudentList();
       </n-form>
     </n-space>
 
+    <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
       <n-gi v-for="item in studentList" :key="item.id">
         <student-item
           :student="item"
-          @refresh="getStudentList(queryFormValue)"
+          @delete="handleDeleteStudent"
+          @edit="handleEditStudent"
         />
       </n-gi>
     </n-grid>
   </n-space>
 
   <upload-modal ref="uploadModalRef" />
-  <create-student-form
-    ref="createStudentFormRef"
+  <edit-student-form
+    ref="editStudentFormRef"
     @success="getStudentList(queryFormValue)"
   />
 </template>

@@ -2,9 +2,9 @@
 import {
   DeleteOutlineRound as DeleteIcon,
   PlusRound as PlusIcon,
-  EditRound as EditIcon,
+  ModeOutlined as EditIcon,
 } from "@vicons/material";
-import { Student, deleteStudent } from "@/api/student";
+import { Student } from "@/api/student";
 import { NThing } from "naive-ui";
 
 defineProps<{
@@ -12,17 +12,9 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "refresh"): void;
+  (e: "delete", id: Student["id"]): void;
+  (e: "edit", id: Student["id"]): void;
 }>();
-
-const message = useMessage();
-
-// 删除学生
-const handleDelete = async (id: Student["id"]) => {
-  await deleteStudent(id);
-  message.success("删除成功");
-  emit("refresh");
-};
 
 // 鼠标移入悬浮
 const itemRef = ref<typeof NThing>();
@@ -51,36 +43,49 @@ const handleMouseLeave = () => {
     @mouseleave="handleMouseLeave"
   >
     <template #header>{{ student.name }}</template>
-    <template v-if="hovering" #header-extra>
+    <template #header-extra>
       <n-space size="small">
         <!-- 编辑 -->
-        <n-button quaternary circle size="small">
+        <n-button
+          secondary
+          circle
+          size="small"
+          type="warning"
+          @click="emit('edit', student.id)"
+        >
           <template #icon>
             <n-icon><edit-icon /></n-icon>
           </template>
         </n-button>
         <!-- 删除 -->
-        <n-button
-          quaternary
-          circle
-          size="small"
-          type="error"
-          @click="handleDelete(student.id)"
+        <n-popconfirm
+          negative-text="取消"
+          positive-text="确定"
+          @positive-click="emit('delete', student.id)"
         >
-          <template #icon>
-            <n-icon><delete-icon /></n-icon>
+          <template #trigger>
+            <n-button secondary circle size="small" type="error">
+              <template #icon>
+                <n-icon><delete-icon /></n-icon>
+              </template>
+            </n-button>
           </template>
-        </n-button>
+          删除了就没有了喔
+        </n-popconfirm>
       </n-space>
     </template>
     <template #description>{{ student.stu_no }}</template>
-    <template v-if="hovering" #action>
-      <n-button size="small" type="primary">
-        <template #icon>
-          <n-icon><plus-icon /></n-icon>
-        </template>
-        加分
-      </n-button>
+    <template #action>
+      <n-collapse-transition :show="hovering">
+        <n-space>
+          <n-button size="small" type="primary">
+            <template #icon>
+              <n-icon><plus-icon /></n-icon>
+            </template>
+            加分
+          </n-button>
+        </n-space>
+      </n-collapse-transition>
     </template>
   </n-thing>
 </template>

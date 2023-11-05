@@ -17,6 +17,9 @@ export type StudentUpdateVO = Pick<Student, "id"> &
 export const getStudentList = (studentQueryVo: StudentQueryVO) =>
   invoke<Student[]>("get_student_list", { studentQueryVo });
 
+export const getStudentById = (id: Student["id"]) =>
+  invoke<Student>("get_student_by_id", { id });
+
 export const createStudent = (studentCreateVo: StudentCreateVO) =>
   invoke<Student["id"]>("create_student", { studentCreateVo });
 
