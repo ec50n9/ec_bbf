@@ -8,7 +8,13 @@ pub struct Student {
     id: String,
     stu_no: String,
     name: String,
-    is_delete: bool,
+}
+
+/// 分数类型结构体
+#[derive(Serialize, Deserialize)]
+pub struct ScoreType {
+    id: String,
+    name: String,
 }
 
 /// 初始化数据库
@@ -17,33 +23,73 @@ pub fn init_db() -> Result<Connection> {
     let conn = Connection::open(db_path)?;
     conn.execute(
         "CREATE TABLE IF NOT EXISTS student (
-              id          varchar(64)     PRIMARY KEY,
-              stu_no      varchar(20)     NOT NULL,
-              name        varchar(20)     NOT NULL,
-              is_delete   numeric         DEFAULT 0
-            )",
+            id          VARCHAR(64)     PRIMARY KEY,
+            stu_no      VARCHAR(20)     NOT NULL,
+            name        VARCHAR(20)     NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS score_type (
+            id          VARCHAR(64)     PRIMARY KEY,
+            name        VARCHAR(20)     NOT NULL,
+            desc        VARCHAR(100)    DEFAULT '',
+            max         INTEGER         NOT NULL DEFAULT -1
+        );
+        CREATE TABLE IF NOT EXISTS student_score_mapping (
+            id              VARCHAR(64)     PRIMARY KEY,
+            student_id      VARCHAR(64)     NOT NULL,
+            score_type_id   VARCHAR(64)     NOT NULL,
+            score           INTEGER         NOT NULL DEFAULT 0 
+        );",
         [],
     )?;
     Ok(conn)
 }
 
+/// 学生列表搜索参数
+#[derive(Serialize, Deserialize)]
+pub struct StudentQueryVO {
+    name: Option<String>,
+    stu_no: Option<String>,
+}
+
 /// 获取全部学生
 #[tauri::command]
-pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<Student>, String> {
+pub fn get_student_list(
+    state: tauri::State<'_, crate::AppState>,
+    student_query_vo: StudentQueryVO,
+) -> Result<Vec<Student>, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    let mut stmt = conn
-        .prepare("SELECT id, stu_no, name, is_delete FROM student WHERE is_delete = 0")
-        .expect("sql预处理出错");
-    let students_iter = stmt
-        .query_map([], |row| {
-            let is_delete = row.get::<usize, i32>(3).expect("获取 is_delete 失败") == 1;
+    let StudentQueryVO { name, stu_no } = student_query_vo;
 
+    // 字段sql
+    let mut query_fields = Vec::new();
+    // 参数值
+    let mut params = Vec::new();
+
+    // 添加参数
+    query_fields.push("1 = 1");
+    if let Some(name) = name {
+        query_fields.push("name LIKE ?");
+        params.push(format!("%{}%", name));
+    }
+    if let Some(stu_no) = stu_no {
+        query_fields.push("stu_no LIKE ?");
+        params.push(format!("%{}%", stu_no));
+    }
+
+    // 组装sql
+    let query_sql = format!(
+        "SELECT id, stu_no, name FROM student WHERE {}",
+        query_fields.join(" AND ")
+    );
+
+    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+    let students_iter = stmt
+        .query_map(params_from_iter(params.iter()), |row| {
             Ok(Student {
                 id: row.get(0)?,
                 stu_no: row.get(1)?,
                 name: row.get(2)?,
-                is_delete,
             })
         })
         .expect("转换结果出错")
@@ -61,18 +107,15 @@ pub fn get_student_by_id(
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let mut stmt = conn
-        .prepare("SELECT id, stu_no, name, is_delete FROM student WHERE id = ? and is_delete = 0")
+        .prepare("SELECT id, stu_no, name FROM student WHERE id = ?")
         .expect("sql预处理出错");
 
     let student = stmt
         .query_row([id], |row| {
-            let is_delete = row.get::<usize, i32>(3).expect("获取 is_delete 是的") == 1;
-
             Ok(Student {
                 id: row.get(0)?,
                 stu_no: row.get(1)?,
                 name: row.get(2)?,
-                is_delete,
             })
         })
         .expect("转换学生类型失败");
@@ -160,12 +203,11 @@ pub fn delete_student(
 ) -> Result<usize, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    // 组装sql
-    let query_sql = format!("UPDATE student SET is_delete = 1 WHERE id = '{}'", id);
-
     // 预处理
-    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+    let mut stmt = conn
+        .prepare("DELETE FROM student WHERE id = ?")
+        .expect("sql预处理出错");
     // 执行
-    let rows = stmt.execute([]).expect("删除失败");
+    let rows = stmt.execute([id]).expect("删除失败");
     Ok(rows)
 }

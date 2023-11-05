@@ -14,8 +14,14 @@ export type StudentCreateVO = Pick<Student, "stu_no" | "name">;
 export type StudentUpdateVO = Pick<Student, "id"> &
   Partial<Omit<Student, "id" | "is_delete">>;
 
-export const getStudentList = (studentQueryVo: StudentQueryVO) =>
-  invoke<Student[]>("get_student_list", { studentQueryVo });
+export const getStudentList = (query: StudentQueryVO) => {
+  const studentQueryVo: any = {};
+  Object.entries(query).map(
+    ([key, value]) => value && (studentQueryVo[key] = value)
+  );
+
+  return invoke<Student[]>("get_student_list", { studentQueryVo });
+};
 
 export const getStudentById = (id: Student["id"]) =>
   invoke<Student>("get_student_by_id", { id });

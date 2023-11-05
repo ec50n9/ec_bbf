@@ -24,15 +24,7 @@ const queryFormValue = ref<StudentApi.StudentQueryVO>({
 const queryFormRules = {};
 const queryFormRef = ref<FormInst>();
 /** 验证表单 */
-const validateQueryForm = () =>
-  queryFormRef.value?.validate((errors) => {
-    if (!errors) {
-      message.success("Valid");
-    } else {
-      console.log(errors);
-      message.error("Invalid");
-    }
-  });
+const validateQueryForm = () => queryFormRef.value?.validate();
 
 const validateQueryFormAndSearch = async () => {
   await validateQueryForm();
@@ -48,6 +40,11 @@ const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
   await StudentApi.deleteStudent(id);
   message.success("删除成功");
   await getStudentList(queryFormValue.value);
+};
+
+// 查看学生详情
+const handleViewStudentDetail = async (id: StudentApi.Student["id"]) => {
+  message.success("查看详情");
 };
 
 // 上传导入弹窗
@@ -122,6 +119,7 @@ getStudentList();
           :student="item"
           @delete="handleDeleteStudent"
           @edit="handleEditStudent"
+          @detail="handleViewStudentDetail"
         />
       </n-gi>
     </n-grid>

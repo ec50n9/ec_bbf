@@ -14,36 +14,22 @@ defineProps<{
 const emit = defineEmits<{
   (e: "delete", id: Student["id"]): void;
   (e: "edit", id: Student["id"]): void;
+  (e: "detail", id: Student["id"]): void;
 }>();
-
-// 鼠标移入悬浮
-const itemRef = ref<typeof NThing>();
-const hovering = ref(false);
-const itemWidth = ref(0);
-
-const handleMouseEnter = () => {
-  const el = itemRef.value?.$el as HTMLDivElement | undefined;
-  if (!el) return;
-
-  itemWidth.value = el.getBoundingClientRect().width;
-  hovering.value = true;
-};
-const handleMouseLeave = () => {
-  hovering.value = false;
-};
 </script>
 
 <template>
   <n-thing
     ref="itemRef"
-    class="p-3 bg-white b rd-2 transition duration-300"
-    :class="{ 'shadow-lg absolute': hovering }"
-    :style="{ width: hovering ? itemWidth + 'px' : 'auto' }"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
+    class="p-3 bg-white b rd-2 cursor-pointer transition duration-300 hover:shadow-lg"
+    @click="emit('detail', student.id)"
   >
-    <template #header>{{ student.name }}</template>
-    <template #header-extra>
+    <template #header>
+      <n-element>
+        {{ student.name }}
+      </n-element>
+    </template>
+    <template v-if="false" #header-extra>
       <n-space size="small">
         <!-- 编辑 -->
         <n-button
@@ -75,17 +61,15 @@ const handleMouseLeave = () => {
       </n-space>
     </template>
     <template #description>{{ student.stu_no }}</template>
-    <template #action>
-      <n-collapse-transition :show="hovering">
-        <n-space>
-          <n-button strong secondary size="small" type="primary" round>
-            <template #icon>
-              <n-icon><plus-icon /></n-icon>
-            </template>
-            加分
-          </n-button>
-        </n-space>
-      </n-collapse-transition>
+    <template v-if="false" #action>
+      <n-space>
+        <n-button strong secondary size="small" type="primary" round>
+          <template #icon>
+            <n-icon><plus-icon /></n-icon>
+          </template>
+          加分
+        </n-button>
+      </n-space>
     </template>
   </n-thing>
 </template>
