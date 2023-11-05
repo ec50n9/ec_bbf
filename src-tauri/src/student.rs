@@ -33,7 +33,7 @@ pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let mut stmt = conn
-        .prepare("SELECT * FROM student WHERE is_delete = 0")
+        .prepare("SELECT id, stu_no, name, is_delete FROM student WHERE is_delete = 0")
         .expect("sql预处理出错");
     let students_iter = stmt
         .query_map([], |row| {
@@ -50,6 +50,33 @@ pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<
         .map(|item| item.unwrap());
 
     Ok(students_iter.collect::<Vec<Student>>())
+}
+
+/// 根据学生id获取学生信息
+#[tauri::command]
+pub fn get_student_by_id(
+    state: tauri::State<'_, crate::AppState>,
+    id: String,
+) -> Result<Student, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let mut stmt = conn
+        .prepare("SELECT id, stu_no, name, is_delete FROM student WHERE id = ? and is_delete = 0")
+        .expect("sql预处理出错");
+
+    let student = stmt
+        .query_row([id], |row| {
+            let is_delete = row.get::<usize, i32>(3).expect("获取 is_delete 是的") == 1;
+
+            Ok(Student {
+                id: row.get(0)?,
+                stu_no: row.get(1)?,
+                name: row.get(2)?,
+                is_delete,
+            })
+        })
+        .expect("转换学生类型失败");
+    Ok(student)
 }
 
 /// 用于创建学生的结构体
