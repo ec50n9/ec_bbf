@@ -1,5 +1,6 @@
 use rusqlite::{params_from_iter, Connection, Result};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 /// 学生结构体
 #[derive(Serialize, Deserialize)]
@@ -32,7 +33,7 @@ pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let mut stmt = conn
-        .prepare("SELECT * FROM student")
+        .prepare("SELECT * FROM student WHERE is_delete = 0")
         .expect("sql预处理出错");
     let students_iter = stmt
         .query_map([], |row| {
@@ -54,7 +55,6 @@ pub fn get_student_list(state: tauri::State<'_, crate::AppState>) -> Result<Vec<
 /// 用于创建学生的结构体
 #[derive(Serialize, Deserialize)]
 pub struct StudentCreateVO {
-    id: String,
     stu_no: String,
     name: String,
 }
@@ -64,15 +64,16 @@ pub struct StudentCreateVO {
 pub fn create_student(
     state: tauri::State<'_, crate::AppState>,
     student_create_vo: StudentCreateVO,
-) -> Result<i64, String> {
+) -> Result<String, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    let StudentCreateVO { id, stu_no, name } = student_create_vo;
+    let id = Uuid::new_v4().to_string();
+    let StudentCreateVO { stu_no, name } = student_create_vo;
     let mut stmt = conn
         .prepare("INSERT INTO student (id, stu_no, name) VALUES (?, ?, ?)")
         .expect("sql预处理出错");
-    let rows = stmt.insert([id, stu_no, name]).expect("");
-    Ok(rows)
+    stmt.insert([id.clone(), stu_no, name]).expect("");
+    Ok(id)
 }
 
 /// 用于更新学生信息的结构体
@@ -133,7 +134,7 @@ pub fn delete_student(
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     // 组装sql
-    let query_sql = format!("DELETE FROM student WHERE id = {}", id);
+    let query_sql = format!("UPDATE student SET is_delete = 1 WHERE id = {}", id);
 
     // 预处理
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
