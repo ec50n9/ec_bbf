@@ -1,39 +1,32 @@
 <script lang="ts" setup>
-import { invoke } from "@tauri-apps/api/tauri";
 import { ArchiveOutline as ArchiveIcon } from "@vicons/ionicons5";
 import { UploadCustomRequestOptions } from "naive-ui";
+import * as StudentApi from "@/api/student";
 
 const handleList = async () => {
-  const res = await invoke("get_student_list", {});
+  const res = await StudentApi.getStudentList();
   console.log(res);
 };
 
 const handleCreate = async () => {
-  const res = await invoke("create_student", {
-    studentCreateVo: {
-      id: "1",
-      stu_no: "123",
-      name: "梁从心",
-      is_delete: false,
-    },
+  const res = await StudentApi.createStudent({
+    id: "1",
+    stu_no: "123",
+    name: "梁从心",
   });
   console.log(res);
 };
 
 const handleUpdate = async () => {
-  const res = await invoke("update_student", {
-    studentUpdateVo: {
-      id: "1",
-      name: "梁钉钉",
-    },
+  const res = await StudentApi.updateStudent({
+    id: "1",
+    name: "梁钉钉",
   });
   console.log(res);
 };
 
 const handleDelete = async () => {
-  const res = await invoke("delete_student", {
-    id: "1",
-  });
+  const res = await StudentApi.deleteStudent("1");
   console.log(res);
 };
 
