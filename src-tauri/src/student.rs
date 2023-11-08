@@ -1,3 +1,5 @@
+use std::sync::MutexGuard;
+
 use rusqlite::{params_from_iter, Connection, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -144,6 +146,28 @@ pub fn create_student(
         .expect("sql预处理出错");
     stmt.insert([id.clone(), stu_no, name]).expect("");
     Ok(id)
+}
+
+/// 批量创建学生
+#[tauri::command]
+pub fn batch_create_student(
+    state: tauri::State<'_, crate::AppState>,
+    student_create_vos: Vec<StudentCreateVO>,
+) -> Result<Vec<String>, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let mut ids = Vec::new();
+    for student_create_vo in student_create_vos {
+        let id = Uuid::new_v4().to_string();
+        let StudentCreateVO { stu_no, name } = student_create_vo;
+        let mut stmt = conn
+            .prepare("INSERT INTO student (id, stu_no, name) VALUES (?, ?, ?)")
+            .expect("sql预处理出错");
+        stmt.insert([id.clone(), stu_no, name]).expect("");
+        ids.push(id);
+    }
+
+    Ok(ids)
 }
 
 /// 用于更新学生信息的结构体

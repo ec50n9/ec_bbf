@@ -29,6 +29,9 @@ export const getStudentById = (id: Student["id"]) =>
 export const createStudent = (studentCreateVo: StudentCreateVO) =>
   invoke<Student["id"]>("create_student", { studentCreateVo });
 
+export const batchCreateStudent = (studentCreateVos: StudentCreateVO[]) =>
+  invoke<Student["id"][]>("batch_create_student", { studentCreateVos });
+
 export const updateStudent = (studentUpdateVo: StudentUpdateVO) =>
   invoke<boolean>("update_student", { studentUpdateVo });
 

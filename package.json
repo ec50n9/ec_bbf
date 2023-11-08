@@ -14,7 +14,8 @@
     "@unocss/reset": "^0.57.1",
     "pinia": "^2.1.7",
     "vue": "^3.3.4",
-    "vue-router": "4"
+    "vue-router": "4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.0",

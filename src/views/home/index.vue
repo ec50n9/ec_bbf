@@ -1,34 +1,23 @@
 <script lang="ts" setup>
 import * as StudentApi from "@/api/student";
+import QueryBar from "./components/query-bar.vue";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
 import EditStudentForm from "./components/edit-student-form.vue";
-import {
-  PlusRound as PlusIcon,
-  FileUploadOutlined as UploadIcon,
-} from "@vicons/material";
-import { FormInst } from "naive-ui";
 
 const message = useMessage();
 
+let queryParams: StudentApi.StudentQueryVO = {};
+
 const studentList = ref<StudentApi.Student[]>([]);
-const getStudentList = async (query: StudentApi.StudentQueryVO = {}) => {
-  studentList.value = await StudentApi.getStudentList(query);
+const getStudentList = async () => {
+  studentList.value = await StudentApi.getStudentList(queryParams);
 };
 
-/** 搜索表单 */
-const queryFormValue = ref<StudentApi.StudentQueryVO>({
-  name: "",
-  stu_no: "",
-});
-const queryFormRules = {};
-const queryFormRef = ref<FormInst>();
-/** 验证表单 */
-const validateQueryForm = () => queryFormRef.value?.validate();
-
-const validateQueryFormAndSearch = async () => {
-  await validateQueryForm();
-  await getStudentList(queryFormValue.value);
+// 查询列表
+const handleQuery = async (params: StudentApi.StudentQueryVO) => {
+  queryParams = params;
+  await getStudentList();
 };
 
 // 编辑学生
@@ -39,12 +28,21 @@ const handleEditStudent = (id: StudentApi.Student["id"]) =>
 const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
   await StudentApi.deleteStudent(id);
   message.success("删除成功");
-  await getStudentList(queryFormValue.value);
+  await getStudentList();
 };
 
 // 查看学生详情
 const handleViewStudentDetail = async (id: StudentApi.Student["id"]) => {
   message.success("查看详情");
+};
+
+// 批量创建
+const handleBatchCreateStudent = async (
+  studentList: StudentApi.StudentCreateVO[]
+) => {
+  await StudentApi.batchCreateStudent(studentList);
+  message.success("批量添加成功");
+  await getStudentList();
 };
 
 // 上传导入弹窗
@@ -62,55 +60,11 @@ getStudentList();
 <template>
   <n-space class="p-3" vertical>
     <!-- 搜索框 -->
-    <n-space class="p-3 bg-white b rd-2">
-      <n-form
-        ref="queryFormRef"
-        inline
-        :label-width="40"
-        :model="queryFormValue"
-        :rules="queryFormRules"
-        size="small"
-        label-placement="left"
-      >
-        <n-form-item label="学号" path="stu_no">
-          <n-input
-            v-model:value="queryFormValue.stu_no"
-            placeholder="请输入学号"
-          />
-        </n-form-item>
-        <n-form-item label="姓名" path="name">
-          <n-input
-            v-model:value="queryFormValue.name"
-            placeholder="请输入姓名"
-          />
-        </n-form-item>
-        <n-form-item>
-          <n-button attr-type="button" @click="validateQueryFormAndSearch">
-            搜索
-          </n-button>
-        </n-form-item>
-        <n-form-item>
-          <n-button
-            attr-type="button"
-            type="primary"
-            @click="openCreateStudentForm"
-          >
-            <template #icon>
-              <n-icon><plus-icon /></n-icon>
-            </template>
-            添加
-          </n-button>
-        </n-form-item>
-        <n-form-item>
-          <n-button attr-type="button" type="info" @click="openUploadModal">
-            <template #icon>
-              <n-icon><upload-icon /></n-icon>
-            </template>
-            导入
-          </n-button>
-        </n-form-item>
-      </n-form>
-    </n-space>
+    <query-bar
+      @query="handleQuery"
+      @create="openCreateStudentForm"
+      @import="openUploadModal"
+    />
 
     <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
@@ -125,9 +79,6 @@ getStudentList();
     </n-grid>
   </n-space>
 
-  <upload-modal ref="uploadModalRef" />
-  <edit-student-form
-    ref="editStudentFormRef"
-    @success="getStudentList(queryFormValue)"
-  />
+  <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
+  <edit-student-form ref="editStudentFormRef" @success="getStudentList" />
 </template>

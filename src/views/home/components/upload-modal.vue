@@ -1,6 +1,12 @@
 <script lang="ts" setup>
+import * as XLSX from "xlsx";
+import { StudentCreateVO } from "@/api/student";
 import { ArchiveOutline as ArchiveIcon } from "@vicons/ionicons5";
 import { UploadCustomRequestOptions } from "naive-ui";
+
+const emit = defineEmits<{
+  (e: "upload", studentList: StudentCreateVO[]): void;
+}>();
 
 const visible = ref(false);
 
@@ -10,36 +16,65 @@ const open = () => {
 };
 defineExpose({ open });
 
-/** 解析txt文件 */
-const convertTxtFile = (file: File) =>
-  new Promise((resolve, reject) => {
+/** 以文本方式读取文件内容 */
+const readTextFromFile = (file: File) =>
+  new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (event) => {
-      let contents = event.target?.result as string;
-      console.log(contents);
-      resolve(contents);
-    };
-    reader.onerror = () => {
-      reject("文件解析出错");
-    };
-
+    reader.onload = (event) => resolve(event.target?.result as string);
+    reader.onerror = () => reject("文件解析出错");
     reader.readAsText(file);
   });
 
-/** 解析json文件 */
-const convertJsonFile = (file: File) =>
-  new Promise((resolve, reject) => {
-    resolve("");
+/** 以缓冲数组方式读取文件内容 */
+const readArrayBufferFromFile = (file: File) =>
+  new Promise<ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => resolve(event.target?.result as ArrayBuffer);
+    reader.onerror = () => reject("文件解析出错");
+    reader.readAsArrayBuffer(file);
   });
+
+/** 解析txt文件 */
+const convertTxtFile = (file: File): Promise<StudentCreateVO[]> =>
+  readTextFromFile(file).then((text) =>
+    text
+      .trim()
+      .split(/\r\n|\n/)
+      .map((line) => line.split(/\s+/))
+      .filter((item) => item.length >= 2)
+      .map(([name, stu_no]) => ({ name, stu_no }))
+  );
+
+/** 解析json文件 */
+const convertJsonFile = async (file: File): Promise<StudentCreateVO[]> => {
+  const text = await readTextFromFile(file);
+  try {
+    const dataList = JSON.parse(text) as StudentCreateVO[];
+    // 检查数据
+    if (dataList.length && dataList.every((item) => item.name && item.stu_no))
+      return dataList;
+    return [];
+  } catch (err) {
+    return [];
+  }
+};
 
 /** 解析xlsx文件 */
-const convertXlsxFile = (file: File) =>
-  new Promise((resolve, reject) => {
-    resolve("");
-  });
+const convertXlsxFile = async (file: File): Promise<StudentCreateVO[]> => {
+  const plainContent = await readArrayBufferFromFile(file);
+  const workbook = XLSX.read(plainContent, { type: "buffer" });
+  const firstSheetName = workbook.SheetNames[0];
+  const dataList = XLSX.utils.sheet_to_json<StudentCreateVO>(
+    workbook.Sheets[firstSheetName]
+  );
+  // 检查数据
+  if (dataList.length && dataList.every((item) => item.name && item.stu_no))
+    return dataList;
+  return [];
+};
 
 /** 处理上传文件 */
-const customUploadRequest = ({
+const customUploadRequest = async ({
   file,
   onFinish,
   onError,
@@ -61,8 +96,9 @@ const customUploadRequest = ({
     return;
   }
 
-  func(targetFile);
+  const studentList: StudentCreateVO[] = await func(targetFile);
   onFinish();
+  emit("upload", studentList);
 };
 </script>
 
@@ -81,6 +117,7 @@ const customUploadRequest = ({
     }"
   >
     <n-upload
+      accept=".txt,.json,.xlsx"
       multiple
       directory-dnd
       :max="1"

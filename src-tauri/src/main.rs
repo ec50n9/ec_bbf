@@ -33,7 +33,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(
-            register_handlers![student::{create_student, get_student_list, get_student_by_id, update_student, delete_student}],
+            register_handlers![student::{create_student, batch_create_student, get_student_list, get_student_by_id, update_student, delete_student}],
         )
         .manage(AppState {
             db_conn: Mutex::new(init_db().unwrap()),
