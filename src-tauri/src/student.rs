@@ -1,5 +1,3 @@
-use std::sync::MutexGuard;
-
 use rusqlite::{params_from_iter, Connection, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

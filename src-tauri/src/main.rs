@@ -10,11 +10,6 @@ use student::init_db;
 mod utils;
 use crate::utils::set_window_shadow;
 
-/** 应用状态 */
-pub struct AppState {
-    db_conn: Mutex<rusqlite::Connection>,
-}
-
 /** 自定义handler注册器，可以批量注册 */
 macro_rules! register_handlers {
     ($( $module:ident :: { $( $handler:ident ),* } ),*) => {
@@ -26,6 +21,12 @@ macro_rules! register_handlers {
     };
 }
 
+/** 应用状态 */
+pub struct AppState {
+    db_conn: Mutex<rusqlite::Connection>,
+}
+
+/** 入口函数 */
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
