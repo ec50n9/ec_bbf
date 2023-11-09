@@ -29,7 +29,7 @@ const emit = defineEmits<{
         {{ student.name }}
       </n-element>
     </template>
-    <template v-if="false" #header-extra>
+    <template #header-extra>
       <n-space size="small">
         <!-- 编辑 -->
         <n-button
@@ -37,7 +37,7 @@ const emit = defineEmits<{
           circle
           size="small"
           type="warning"
-          @click="emit('edit', student.id)"
+          @click.stop="emit('edit', student.id)"
         >
           <template #icon>
             <n-icon><edit-icon /></n-icon>
@@ -50,7 +50,7 @@ const emit = defineEmits<{
           @positive-click="emit('delete', student.id)"
         >
           <template #trigger>
-            <n-button secondary circle size="small" type="error">
+            <n-button secondary circle size="small" type="error" @click.stop>
               <template #icon>
                 <n-icon><delete-icon /></n-icon>
               </template>
