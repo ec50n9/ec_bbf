@@ -10,7 +10,7 @@ pub fn set_window_shadow<R: Runtime>(app: &tauri::App<R>) {
 /// 自定义handler注册器，可以批量注册
 #[macro_export]
 macro_rules! register_handlers {
-    ($( $module:ident :: { $( $handler:ident ),* } ),*) => {
+    ($($module:ident :: { $( $handler:ident ),* }),*) => {
         tauri::generate_handler![
             $(
                 $( $module::$handler ),*

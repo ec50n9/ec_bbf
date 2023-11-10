@@ -1,4 +1,4 @@
-use rusqlite::{params_from_iter, Connection, Result};
+use rusqlite::{params_from_iter, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -8,40 +8,6 @@ pub struct Student {
     id: String,
     stu_no: String,
     name: String,
-}
-
-/// 分数类型结构体
-#[derive(Serialize, Deserialize)]
-pub struct ScoreType {
-    id: String,
-    name: String,
-}
-
-/// 初始化数据库
-pub fn init_db() -> Result<Connection> {
-    let db_path = "D://db.sqlite";
-    let conn = Connection::open(db_path)?;
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS student (
-            id          VARCHAR(64)     PRIMARY KEY,
-            stu_no      VARCHAR(20)     NOT NULL,
-            name        VARCHAR(20)     NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS score_type (
-            id          VARCHAR(64)     PRIMARY KEY,
-            name        VARCHAR(20)     NOT NULL,
-            desc        VARCHAR(100)    DEFAULT '',
-            max         INTEGER         NOT NULL DEFAULT -1
-        );
-        CREATE TABLE IF NOT EXISTS student_score_mapping (
-            id              VARCHAR(64)     PRIMARY KEY,
-            student_id      VARCHAR(64)     NOT NULL,
-            score_type_id   VARCHAR(64)     NOT NULL,
-            score           INTEGER         NOT NULL DEFAULT 0 
-        );",
-        [],
-    )?;
-    Ok(conn)
 }
 
 /// 学生列表搜索参数
