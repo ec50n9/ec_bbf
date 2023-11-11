@@ -7,6 +7,14 @@ export type ScoreType = {
   max: number;
 };
 
+/**
+ * 获取全部分数类型
+ *
+ * @return 分数类型列表
+ */
+export const getScoreTypeList = () =>
+  invoke<ScoreType[]>("get_score_type_list");
+
 export type ScoreTypeCreateVO = {
   name: string;
   desc: string;
@@ -76,5 +84,5 @@ export type Score = {
  * @param student_id - 学生的ID
  * @return 学生全部分数
  */
-export const getScoreListByStudentId = (student_id: string) =>
-  invoke<Score[]>("get_score_list_by_student_id", { student_id });
+export const getScoreListByStudentId = (studentId: string) =>
+  invoke<Score[]>("get_score_list_by_student_id", { studentId });

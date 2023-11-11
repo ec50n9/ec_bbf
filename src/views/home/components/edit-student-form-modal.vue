@@ -73,7 +73,6 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <!-- 上传数据 -->
   <n-modal
     v-model:show="visible"
     class="w-4/5 max-w-120"

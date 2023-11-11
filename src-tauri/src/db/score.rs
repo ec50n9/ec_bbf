@@ -11,6 +11,30 @@ pub struct ScoreType {
     max: i32,
 }
 
+/// 获取全部分数类型
+#[tauri::command]
+pub fn get_score_type_list(
+    state: tauri::State<'_, crate::AppState>,
+) -> Result<Vec<ScoreType>, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+    let query_sql = "SELECT id, name, desc, max FROM score_type";
+
+    let mut stmt = conn.prepare(query_sql).expect("sql预处理出错");
+    let score_iter = stmt
+        .query_map([], |row| {
+            Ok(ScoreType {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                desc: row.get(2)?,
+                max: row.get(3)?,
+            })
+        })
+        .expect("转换结果出错")
+        .map(|item| item.unwrap());
+
+    Ok(score_iter.collect())
+}
+
 /// 用于创建分数类型的结构体
 #[derive(Serialize, Deserialize)]
 pub struct ScoreTypeCreateVO {

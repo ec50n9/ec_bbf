@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import * as StudentApi from "@/api/student";
+import * as ScoreApi from "@/api/score";
 import {
   PlusRound as PlusIcon,
   FileUploadOutlined as UploadIcon,
@@ -26,6 +27,11 @@ const validateQueryFormAndSearch = async () => {
   await validateQueryForm();
   emit("query", unref(queryFormValue));
 };
+
+const handleTest = async () => {
+  const scoreTypeList = await ScoreApi.getScoreTypeList();
+  console.log(scoreTypeList);
+};
 </script>
 
 <template>
@@ -45,14 +51,17 @@ const validateQueryFormAndSearch = async () => {
           placeholder="请输入学号"
         />
       </n-form-item>
+
       <n-form-item label="姓名" path="name">
         <n-input v-model:value="queryFormValue.name" placeholder="请输入姓名" />
       </n-form-item>
+
       <n-form-item>
         <n-button attr-type="button" @click="validateQueryFormAndSearch">
           搜索
         </n-button>
       </n-form-item>
+
       <n-form-item>
         <n-button attr-type="button" type="primary" @click="emit('create')">
           <template #icon>
@@ -61,12 +70,22 @@ const validateQueryFormAndSearch = async () => {
           添加
         </n-button>
       </n-form-item>
+
       <n-form-item>
         <n-button attr-type="button" type="info" @click="emit('import')">
           <template #icon>
             <n-icon><upload-icon /></n-icon>
           </template>
           导入
+        </n-button>
+      </n-form-item>
+
+      <n-form-item>
+        <n-button attr-type="button" type="info" @click="handleTest">
+          <template #icon>
+            <n-icon><upload-icon /></n-icon>
+          </template>
+          测试
         </n-button>
       </n-form-item>
     </n-form>

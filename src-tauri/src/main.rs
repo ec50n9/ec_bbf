@@ -33,6 +33,7 @@ fn main() {
                 get_student_by_id, update_student,
                 delete_student
             }, score::{
+                get_score_type_list,
                 create_score_type,
                 update_score_type,
                 delete_score_type,

@@ -3,7 +3,8 @@ import * as StudentApi from "@/api/student";
 import QueryBar from "./components/query-bar.vue";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
-import EditStudentForm from "./components/edit-student-form.vue";
+import EditStudentFormModal from "./components/edit-student-form-modal.vue";
+import StudentScoreDetailsModal from "./components/student-score-details-modal.vue";
 
 const message = useMessage();
 
@@ -22,18 +23,13 @@ const handleQuery = async (params: StudentApi.StudentQueryVO) => {
 
 // 编辑学生
 const handleEditStudent = (id: StudentApi.Student["id"]) =>
-  editStudentFormRef.value?.open("update", id);
+  editStudentFormModalRef.value?.open("update", id);
 
 // 删除学生
 const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
   await StudentApi.deleteStudent(id);
   message.success("删除成功");
   await getStudentList();
-};
-
-// 查看学生详情
-const handleViewStudentDetail = async (id: StudentApi.Student["id"]) => {
-  message.success("查看详情");
 };
 
 // 批量创建
@@ -50,8 +46,14 @@ const uploadModalRef = ref<typeof UploadModal>();
 const openUploadModal = () => uploadModalRef.value?.open();
 
 // 新建学生弹窗
-const editStudentFormRef = ref<typeof UploadModal>();
-const openCreateStudentForm = () => editStudentFormRef.value?.open("create");
+const editStudentFormModalRef = ref<typeof EditStudentFormModal>();
+const openCreateStudentFormModal = () =>
+  editStudentFormModalRef.value?.open("create");
+
+// 查看学生分数弹窗
+const studentScoreDetailsModalRef = ref<typeof StudentScoreDetailsModal>();
+const openStudentScoreDetailsModal = (id: StudentApi.Student["id"]) =>
+  studentScoreDetailsModalRef.value?.open(id);
 
 // 初始化
 getStudentList();
@@ -62,7 +64,7 @@ getStudentList();
     <!-- 搜索框 -->
     <query-bar
       @query="handleQuery"
-      @create="openCreateStudentForm"
+      @create="openCreateStudentFormModal"
       @import="openUploadModal"
     />
 
@@ -73,12 +75,16 @@ getStudentList();
           :student="item"
           @delete="handleDeleteStudent"
           @edit="handleEditStudent"
-          @detail="handleViewStudentDetail"
+          @detail="openStudentScoreDetailsModal"
         />
       </n-gi>
     </n-grid>
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
-  <edit-student-form ref="editStudentFormRef" @success="getStudentList" />
+  <edit-student-form-modal
+    ref="editStudentFormModalRef"
+    @success="getStudentList"
+  />
+  <student-score-details-modal ref="studentScoreDetailsModalRef" />
 </template>
