@@ -4,25 +4,25 @@ import {
   MinimizeRound,
   MaximizeRound,
   CloseRound,
-  ArrowBackRound,
+  // ArrowBackRound,
 } from "@vicons/material";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 
 defineProps<{
   title: string;
 }>();
 
-const router = useRouter();
+// const router = useRouter();
 </script>
 
 <template>
   <div data-tauri-drag-region class="px-5 py-2 flex items-center gap-3 b-b">
     <!-- 返回按钮 -->
-    <NButton class="shrink-0" quaternary circle @click="router.back()">
+    <!-- <NButton class="shrink-0" quaternary circle @click="router.back()">
       <template #icon>
         <NIcon class="c-gray-7"><ArrowBackRound /></NIcon>
       </template>
-    </NButton>
+    </NButton> -->
 
     <!-- 标题 -->
     <h1 data-tauri-drag-region class="grow basis-0 text-xl">{{ title }}</h1>

@@ -229,8 +229,8 @@ watch(visible, (value) => {
           :percentage="totalScore.percentage"
         />
         <n-el vertical>
-          <n-el class="mb-1 text-base c-gray-5">我的评价是</n-el>
-          <n-el class="text-3xl c-yellow-5">{{ totalScore.text }}</n-el>
+          <n-el class="mb-1 text-base c-gray-4">我的评价是</n-el>
+          <n-el class="text-2xl c-yellow-5">{{ totalScore.text }}</n-el>
         </n-el>
       </n-el>
 
