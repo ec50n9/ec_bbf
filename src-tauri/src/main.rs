@@ -27,18 +27,19 @@ fn main() {
         })
         .invoke_handler(register_handlers![
             student::{
-            create_student,
-            batch_create_student,
-            get_student_list,
-            get_student_by_id, update_student,
-            delete_student
-        }, score::{
-            create_score_type,
-            update_score_type,
-            delete_score_type,
-            add_score,
-            get_score_list_by_student_id
-        }])
+                create_student,
+                batch_create_student,
+                get_student_list,
+                get_student_by_id, update_student,
+                delete_student
+            }, score::{
+                create_score_type,
+                update_score_type,
+                delete_score_type,
+                add_score,
+                get_score_list_by_student_id
+            }
+        ])
         .manage(AppState {
             db_conn: Mutex::new(init_db().unwrap()),
         })
