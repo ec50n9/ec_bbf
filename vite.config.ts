@@ -4,12 +4,14 @@ import vue from "@vitejs/plugin-vue";
 import unoCSS from "unocss/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
+import vueJsx from "@vitejs/plugin-vue-jsx";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [
     vue(),
+    vueJsx(),
     unoCSS(),
     AutoImport({
       imports: [

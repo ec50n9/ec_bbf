@@ -191,9 +191,6 @@ pub fn add_score(
 #[derive(Serialize, Deserialize)]
 pub struct Score {
     score_type_id: String,
-    score_type_name: String,
-    score_type_desc: String,
-    max: i32,
     score: i32,
 }
 
@@ -205,17 +202,14 @@ pub fn get_score_list_by_student_id(
 ) -> Result<Vec<Score>, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    let query_sql = "SELECT * FROM student_score_mapping WHERE student_id = ?";
+    let query_sql = "SELECT score_type_id, score FROM student_score_mapping WHERE student_id = ?";
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
 
     let score_list = stmt
         .query_map([student_id], |row| {
             Ok(Score {
                 score_type_id: row.get(0)?,
-                score_type_name: row.get(1)?,
-                score_type_desc: row.get(2)?,
-                max: row.get(3)?,
-                score: row.get(4)?,
+                score: row.get(1)?,
             })
         })
         .expect("查询失败")

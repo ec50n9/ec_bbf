@@ -72,9 +72,6 @@ export const addScore = (scorePlusVo: ScorePlusVO) =>
 
 export type Score = {
   score_type_id: string;
-  score_type_name: string;
-  score_type_desc: string;
-  max: number;
   score: number;
 };
 

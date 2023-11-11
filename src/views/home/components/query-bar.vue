@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import * as StudentApi from "@/api/student";
-import * as ScoreApi from "@/api/score";
 import {
   PlusRound as PlusIcon,
   FileUploadOutlined as UploadIcon,
@@ -26,11 +25,6 @@ const validateQueryForm = () => queryFormRef.value?.validate();
 const validateQueryFormAndSearch = async () => {
   await validateQueryForm();
   emit("query", unref(queryFormValue));
-};
-
-const handleTest = async () => {
-  const scoreTypeList = await ScoreApi.getScoreTypeList();
-  console.log(scoreTypeList);
 };
 </script>
 
@@ -77,15 +71,6 @@ const handleTest = async () => {
             <n-icon><upload-icon /></n-icon>
           </template>
           导入
-        </n-button>
-      </n-form-item>
-
-      <n-form-item>
-        <n-button attr-type="button" type="info" @click="handleTest">
-          <template #icon>
-            <n-icon><upload-icon /></n-icon>
-          </template>
-          测试
         </n-button>
       </n-form-item>
     </n-form>
