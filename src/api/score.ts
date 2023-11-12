@@ -84,3 +84,22 @@ export type Score = {
  */
 export const getScoreListByStudentId = (studentId: string) =>
   invoke<Score[]>("get_score_list_by_student_id", { studentId });
+
+export type ScoreStatistics = {
+  date: string;
+  positive_count: number;
+  negative_count: number;
+  positive_total_score: number;
+  negative_total_score: number;
+};
+
+export const getDailyScoreByStudentId = (
+  studentId: string,
+  startDate: string,
+  endDate: string
+) =>
+  invoke<ScoreStatistics[]>("get_daily_score_by_student_id", {
+    studentId,
+    startDate,
+    endDate,
+  });

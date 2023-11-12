@@ -38,7 +38,8 @@ fn main() {
                 update_score_type,
                 delete_score_type,
                 add_score,
-                get_score_list_by_student_id
+                get_score_list_by_student_id,
+                get_daily_score_by_student_id
             }
         ])
         .manage(AppState {

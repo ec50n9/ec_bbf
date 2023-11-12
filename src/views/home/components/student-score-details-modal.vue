@@ -6,6 +6,7 @@ import {
   getScoreListByStudentId,
   getScoreTypeList,
   addScore,
+  getDailyScoreByStudentId,
 } from "@/api/score";
 import { getStudentById } from "@/api/student";
 import {
@@ -42,6 +43,9 @@ const open = async (id: Student["id"]) => {
   studentId.value = id;
   studentInfo.value = await getStudentById(id);
   await refreshData();
+
+  const test = await getDailyScoreByStudentId(id, "2023-09-01", "2024-09-01");
+  console.log(test);
 };
 defineExpose({ open });
 

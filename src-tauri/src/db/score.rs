@@ -208,3 +208,55 @@ pub fn get_score_list_by_student_id(
         .collect::<Vec<Score>>();
     Ok(score_list)
 }
+
+/// 每日分数统计出参
+#[derive(Serialize, Deserialize)]
+pub struct ScoreStatistics {
+    date: String,
+    positive_count: i32,
+    negative_count: i32,
+    positive_total_score: i32,
+    negative_total_score: i32,
+}
+
+/// 根据学生id查询指定时间段内的每日分数统计
+/// 日期示例：2022-01-01
+#[tauri::command]
+pub fn get_daily_score_by_student_id(
+    state: tauri::State<'_, crate::AppState>,
+    student_id: String,
+    start_date: String,
+    end_date: String,
+) -> Result<Vec<ScoreStatistics>, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let query_sql = "SELECT
+            DATE(create_time)                                      AS date,
+            COUNT(CASE WHEN action_value >= 0 THEN 1 END)          AS positive_count,
+            COUNT(CASE WHEN action_value < 0 THEN 1 END)           AS negative_count,
+            COALESCE(SUM(CASE WHEN action_value >= 0 THEN action_value END), 0) AS positive_total_score,
+            COALESCE(SUM(CASE WHEN action_value < 0 THEN action_value END), 0)  AS negative_total_score
+        FROM
+            student_score_record
+        WHERE
+            student_id = ?
+            AND create_time >= ?
+            AND create_time < ?
+        GROUP BY DATE(create_time);";
+    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+
+    let score_list = stmt
+        .query_map([student_id, start_date, end_date], |row| {
+            Ok(ScoreStatistics {
+                date: row.get(0)?,
+                positive_count: row.get(1)?,
+                negative_count: row.get(2)?,
+                positive_total_score: row.get(3)?,
+                negative_total_score: row.get(4)?,
+            })
+        })
+        .expect("查询失败")
+        .map(|item| item.unwrap())
+        .collect::<Vec<ScoreStatistics>>();
+    Ok(score_list)
+}
