@@ -64,23 +64,43 @@ const totalScore = computed(() => {
   );
 
   let text = "一般般啊小老弟";
-  if (percentage >= 90) {
-    text = "算你厉害!";
+  let icon = "i-fluent-emoji:call-me-hand";
+  if (percentage === 100) {
+    text = "我勒个豆！这谁还分得清你和爱因斯坦啊";
+    icon = "i-fluent-emoji:index-pointing-at-the-viewer";
+  } else if (percentage >= 90) {
+    text = "好好好，算你厉害!";
+    icon = "i-fluent-emoji:sports-medal";
   } else if (percentage >= 80) {
     text = "有点东西!";
-  } else if (percentage >= 60) {
+    icon = "i-fluent-emoji:clapping-hands";
+  } else if (percentage >= 50) {
     text = "害行嗷, 再加把劲";
+    icon = "i-fluent-emoji:flexed-biceps";
   } else if (percentage >= 40) {
+    text = "中规中矩，敷衍你一下吧";
+    icon = "i-fluent-emoji:thumbs-up";
+  } else if (percentage >= 30) {
     text = "有两把刷子, 但好像只有两把";
+    icon = "i-fluent-emoji:person-tipping-hand";
+  } else if (percentage >= 20) {
+    text = "嘿嘿，好起来了";
+    icon = "i-fluent-emoji:cat-with-wry-smile";
   } else if (percentage >= 10) {
     text = "是有点进步空间的";
+    icon = "i-fluent-emoji:confetti-ball";
+  } else if (percentage > 0) {
+    text = "总比没有好";
+    icon = "i-fluent-emoji:yawning-face";
   } else {
     text = "汗流浃背了吧老弟";
+    icon = "i-fluent-emoji:face-with-hand-over-mouth";
   }
 
   return {
     percentage,
     text,
+    icon,
   };
 });
 
@@ -223,15 +243,17 @@ watch(visible, (value) => {
       <!-- 统计面板 -->
       <n-el class="pb-3 flex justify-center items-center gap-3">
         <n-progress
+          class="shrink-0"
           type="dashboard"
           :stroke-width="10"
           gap-position="bottom"
           :percentage="totalScore.percentage"
         />
-        <n-el vertical>
+        <n-el class="ml-2">
           <n-el class="mb-1 text-base c-gray-4">我的评价是</n-el>
           <n-el class="text-2xl c-yellow-5">{{ totalScore.text }}</n-el>
         </n-el>
+        <n-el class="shrink-0 text-7xl" :class="totalScore.icon" />
       </n-el>
 
       <!-- 每个分数 -->
