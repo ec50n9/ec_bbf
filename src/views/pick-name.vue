@@ -110,7 +110,7 @@ const handleStart = () => {
   formRef.value?.validate();
 
   // 获取配置
-  const { dontRepeat, autoStop, quantity } = formValue.value;
+  const { dontRepeat, quantity } = formValue.value;
 
   // 清空选中数组
   selectedIndexList.value = [];
