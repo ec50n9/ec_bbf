@@ -9,6 +9,7 @@ export type Option = {
   studentName: Student["name"];
   scoreTypeId: ScoreType["id"];
   scoreTypeName: ScoreType["name"];
+  currentScore: number;
   max: ScoreType["max"];
 };
 
@@ -27,6 +28,7 @@ const state = ref<Option>({
   studentName: "",
   scoreTypeId: "",
   scoreTypeName: "",
+  currentScore: 0,
   max: 0,
 });
 
@@ -95,7 +97,7 @@ defineExpose({ open });
         <n-input-number
           v-model:value="formValue.actionValue"
           :min="1"
-          :max="state.max"
+          :max="state.action === 'plus' ? state.max : state.currentScore"
           :placeholder="`${actionText}多少分`"
         />
       </n-form-item>

@@ -305,6 +305,7 @@ watch(visible, (value) => {
                 scoreTypeId: item.id,
                 scoreTypeName: item.name,
                 max: item.max,
+                currentScore: scoreMap.get(item.id)||0,
               })
             "
           >
@@ -328,6 +329,7 @@ watch(visible, (value) => {
                 scoreTypeId: item.id,
                 scoreTypeName: item.name,
                 max: item.max,
+                currentScore: scoreMap.get(item.id)||0,
               })
             "
           >
