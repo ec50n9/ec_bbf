@@ -19,6 +19,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@iconify-json/fluent-emoji": "^1.1.15",
     "@tauri-apps/cli": "^1.5.0",
     "@types/node": "^20.8.9",
     "@vicons/ionicons5": "^0.12.0",

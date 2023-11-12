@@ -28,6 +28,9 @@ dependencies:
     version: 0.18.5
 
 devDependencies:
+  '@iconify-json/fluent-emoji':
+    specifier: ^1.1.15
+    version: 1.1.15
   '@tauri-apps/cli':
     specifier: ^1.5.0
     version: 1.5.6
@@ -619,6 +622,12 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@iconify-json/fluent-emoji@1.1.15:
+    resolution: {integrity: sha512-C0HajGHrQpLsI7P8/C113xuV8vr8QTD8RG50SuEEG7OMRRA1TkuR+s5lJTuvq/9//yrzI9HMIO5dodh/hKo2sA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
