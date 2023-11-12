@@ -24,6 +24,8 @@ defineProps<{
       </template>
     </NButton> -->
 
+    <div class="text-2xl i-fluent-emoji:avocado" />
+
     <!-- 标题 -->
     <h1 data-tauri-drag-region class="grow basis-0 text-xl">{{ title }}</h1>
 
