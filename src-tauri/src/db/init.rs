@@ -36,7 +36,8 @@ pub fn init_db() -> Result<Connection> {
                   student_id    TEXT    NOT NULL,
                   score_type_id TEXT    NOT NULL,
                   action_value  INTEGER NOT NULL,
-                  reason        TEXT    NOT NULL
+                  reason        TEXT    NOT NULL,
+                  create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
               );",
         [],
     )?;

@@ -88,7 +88,7 @@ defineExpose({ open });
       :label-width="80"
       :model="formValue"
       :rules="formRules"
-      size="small"
+      size="medium"
       label-placement="left"
     >
       <n-form-item :label="`${actionText}分分数`" path="actionValue">
