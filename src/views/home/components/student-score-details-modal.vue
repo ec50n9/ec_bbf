@@ -15,6 +15,7 @@ import {
 import { changeColor } from "seemly";
 import * as echarts from "echarts";
 import { useThemeVars } from "naive-ui";
+import ScoreActionModal from "./score-action-modal.vue";
 
 const themeVars = useThemeVars();
 
@@ -104,11 +105,19 @@ const totalScore = computed(() => {
   };
 });
 
-const handlePlus = async (scoreType: ScoreType, plusValue: number) => {
+const scoreActionModalRef = ref<InstanceType<typeof ScoreActionModal>>();
+
+/** 加分 */
+const handlePlus = async (
+  scoreTypeId: ScoreType["id"],
+  plusValue: number,
+  reason?: string
+) => {
   await addScore({
     student_id: studentId.value!,
-    score_type_id: scoreType.id,
+    score_type_id: scoreTypeId,
     action_value: plusValue,
+    reason,
   });
   await refreshData();
 };
@@ -287,21 +296,40 @@ watch(visible, (value) => {
             secondary
             size="small"
             circle
-            @click="() => handlePlus(item, -1)"
-            :disabled="scoreMap.get(item.id) === 0"
+            :disabled="!scoreMap.get(item.id)"
+            @click="
+              scoreActionModalRef?.open({
+                action: 'minus',
+                studentId: studentInfo!.id,
+                studentName: studentInfo!.name,
+                scoreTypeId: item.id,
+                scoreTypeName: item.name,
+                max: item.max,
+              })
+            "
           >
             <template #icon>
               <n-icon><minus-icon /></n-icon>
             </template>
           </n-button>
+
           <!-- 加分 -->
           <n-button
             type="success"
             secondary
             size="small"
             circle
-            @click="() => handlePlus(item, 1)"
             :disabled="scoreMap.get(item.id) === item.max"
+            @click="
+              scoreActionModalRef?.open({
+                action: 'plus',
+                studentId: studentInfo!.id,
+                studentName: studentInfo!.name,
+                scoreTypeId: item.id,
+                scoreTypeName: item.name,
+                max: item.max,
+              })
+            "
           >
             <template #icon>
               <n-icon><plus-icon /></n-icon>
@@ -311,4 +339,11 @@ watch(visible, (value) => {
       </n-el>
     </n-space>
   </n-modal>
+
+  <score-action-modal
+    ref="scoreActionModalRef"
+    @submit="
+      (scoreTypeId, value, reason) => handlePlus(scoreTypeId, value, reason)
+    "
+  />
 </template>
