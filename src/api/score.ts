@@ -58,7 +58,8 @@ export const deleteScoreType = (id: ScoreType["id"]) =>
 export type ScorePlusVO = {
   student_id: string;
   score_type_id: string;
-  score: number;
+  action_value: number;
+  reason?: string;
 };
 
 /**

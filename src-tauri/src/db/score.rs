@@ -142,7 +142,8 @@ pub fn delete_score_type(
 pub struct ScorePlusVO {
     student_id: String,
     score_type_id: String,
-    score: i32,
+    action_value: i32,
+    reason: Option<String>,
 }
 
 /// 根据学生id和分数类型id为学生加分（可为负数
@@ -153,36 +154,26 @@ pub fn add_score(
 ) -> Result<(), String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
+    let id = Uuid::new_v4().to_string();
     let ScorePlusVO {
         student_id,
         score_type_id,
-        score,
+        action_value,
+        reason,
     } = score_plus_vo;
-
-    let query_sql =
-        "SELECT score FROM student_score_mapping WHERE student_id = ? AND score_type_id = ?";
-    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
-    let origin_score_result = stmt.query_row([&student_id, &score_type_id], |row| {
-        Ok(row.get::<usize, i32>(0)?)
-    });
-
-    match origin_score_result {
-        Ok(origin_score) => {
-            let new_score: i32 = origin_score + score;
-            let mut stmt = conn
-                .prepare("UPDATE student_score_mapping SET score = ? WHERE student_id = ? AND score_type_id = ?")
-                .expect("sql预处理出错");
-            stmt.execute([new_score.to_string(), student_id, score_type_id])
-                .expect("更新失败");
-        }
-        Err(_) => {
-            let mut stmt = conn
-                .prepare("INSERT INTO student_score_mapping (student_id, score_type_id, score) VALUES (?, ?, ?)")
-                .expect("sql预处理出错");
-            stmt.insert([student_id, score_type_id, score.to_string()])
-                .expect("插入失败");
-        }
-    }
+    let mut stmt = conn
+        .prepare(
+            "INSERT INTO student_score_record (id, student_id, score_type_id, action_value, reason) VALUES (?, ?, ?, ?, ?)",
+        )
+        .expect("sql预处理出错");
+    stmt.insert([
+        id,
+        student_id,
+        score_type_id,
+        action_value.to_string(),
+        reason.unwrap_or(String::new()),
+    ])
+    .expect("插入失败");
 
     Ok(())
 }
@@ -202,7 +193,7 @@ pub fn get_score_list_by_student_id(
 ) -> Result<Vec<Score>, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
-    let query_sql = "SELECT score_type_id, score FROM student_score_mapping WHERE student_id = ?";
+    let query_sql = "SELECT score_type_id, SUM(action_value) AS score FROM student_score_record WHERE student_id = ? GROUP BY score_type_id";
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
 
     let score_list = stmt

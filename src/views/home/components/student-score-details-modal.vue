@@ -108,7 +108,7 @@ const handlePlus = async (scoreType: ScoreType, plusValue: number) => {
   await addScore({
     student_id: studentId.value!,
     score_type_id: scoreType.id,
-    score: plusValue,
+    action_value: plusValue,
   });
   await refreshData();
 };
