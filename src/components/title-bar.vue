@@ -32,44 +32,29 @@ defineProps<{
     <!-- 操作 -->
     <NSpace class="shrink-0">
       <!-- 最小化 -->
-      <NButton
-        strong
-        secondary
-        circle
-        type="info"
-        size="small"
-        @click="appWindow.minimize()"
-      >
+      <NButton strong secondary circle type="info" size="small" @click="appWindow.minimize()">
         <template #icon>
-          <NIcon><MinimizeRound /></NIcon>
+          <NIcon>
+            <MinimizeRound />
+          </NIcon>
         </template>
       </NButton>
 
       <!-- 最大化 -->
-      <NButton
-        strong
-        secondary
-        circle
-        type="primary"
-        size="small"
-        @click="appWindow.toggleMaximize()"
-      >
+      <NButton strong secondary circle type="primary" size="small" @click="appWindow.toggleMaximize()">
         <template #icon>
-          <NIcon><MaximizeRound /></NIcon>
+          <NIcon>
+            <MaximizeRound />
+          </NIcon>
         </template>
       </NButton>
 
       <!-- 关闭 -->
-      <NButton
-        strong
-        secondary
-        circle
-        type="error"
-        size="small"
-        @click="appWindow.close()"
-      >
+      <NButton strong secondary circle type="error" size="small" @click="appWindow.close()">
         <template #icon>
-          <NIcon><CloseRound /></NIcon>
+          <NIcon>
+            <CloseRound />
+          </NIcon>
         </template>
       </NButton>
     </NSpace>

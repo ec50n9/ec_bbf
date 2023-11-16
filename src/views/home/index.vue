@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import * as StudentApi from "@/api/student";
-import QueryBar from "./components/query-bar.vue";
+import QueryBar from "./bars/query-bar.vue";
+import PickNameBar from "./bars/pick-name-bar.vue";
+import SettingsBar from "./bars/settings-bar.vue";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
 import EditStudentFormModal from "./components/edit-student-form-modal.vue";
@@ -61,30 +63,33 @@ getStudentList();
 
 <template>
   <n-space class="p-3" vertical>
-    <!-- 搜索框 -->
-    <query-bar
-      @query="handleQuery"
-      @create="openCreateStudentFormModal"
-      @import="openUploadModal"
-    />
+    <n-el class="px-5 pt-1 pb-3 b rd-3">
+      <n-tabs type="line" animated>
+        <n-tab-pane name="query" tab="查找">
+          <!-- 搜索框 -->
+          <query-bar @query="handleQuery" @create="openCreateStudentFormModal" @import="openUploadModal" />
+        </n-tab-pane>
+        <n-tab-pane name="pick-name" tab="点名">
+          <!-- 点名框 -->
+          <pick-name-bar />
+        </n-tab-pane>
+        <n-tab-pane name="settings" tab="设置">
+          <!-- 设置框 -->
+          <settings-bar />
+        </n-tab-pane>
+      </n-tabs>
+    </n-el>
 
     <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
       <n-gi v-for="item in studentList" :key="item.id">
-        <student-item
-          :student="item"
-          @delete="handleDeleteStudent"
-          @edit="handleEditStudent"
-          @detail="openStudentScoreDetailsModal"
-        />
+        <student-item :student="item" @delete="handleDeleteStudent" @edit="handleEditStudent"
+          @detail="openStudentScoreDetailsModal" />
       </n-gi>
     </n-grid>
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
-  <edit-student-form-modal
-    ref="editStudentFormModalRef"
-    @success="getStudentList"
-  />
+  <edit-student-form-modal ref="editStudentFormModalRef" @success="getStudentList" />
   <student-score-details-modal ref="studentScoreDetailsModalRef" />
 </template>
