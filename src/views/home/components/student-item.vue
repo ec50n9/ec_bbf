@@ -9,6 +9,8 @@ import { NThing } from "naive-ui";
 
 defineProps<{
   student: Student;
+  focus: boolean;
+  selected: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -21,13 +23,12 @@ const emit = defineEmits<{
 <template>
   <n-thing
     ref="itemRef"
-    class="p-3 bg-white b rd-2 cursor-pointer transition duration-300 hover:shadow-lg"
+    class="p-3 bg-white b rd-2 outline-2 outline-blue-3 cursor-pointer transition duration-300 hover:shadow-lg"
+    :class="{ outline: focus || selected, 'outline-blue-7!': selected }"
     @click="emit('detail', student.id)"
   >
     <template #header>
-      <n-element>
-        {{ student.name }}
-      </n-element>
+      <n-el>{{ student.name }}</n-el>
     </template>
     <template #header-extra>
       <n-space size="small">

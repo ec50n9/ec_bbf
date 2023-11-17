@@ -7,6 +7,7 @@ import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
 import EditStudentFormModal from "./components/edit-student-form-modal.vue";
 import StudentScoreDetailsModal from "./components/student-score-details-modal.vue";
+import { usePick } from "@/composables/pick";
 
 const message = useMessage();
 
@@ -57,6 +58,16 @@ const studentScoreDetailsModalRef = ref<typeof StudentScoreDetailsModal>();
 const openStudentScoreDetailsModal = (id: StudentApi.Student["id"]) =>
   studentScoreDetailsModalRef.value?.open(id);
 
+// 点名相关
+const studentIds = computed(() =>
+  studentList.value.map((student) => student.id)
+);
+const picker = usePick(studentIds);
+
+const handleActiveTabChange = (_tab: string) => {
+  picker.pause();
+};
+
 // 初始化
 getStudentList();
 </script>
@@ -64,14 +75,24 @@ getStudentList();
 <template>
   <n-space class="p-3" vertical>
     <n-el class="px-5 pt-1 pb-3 b rd-3">
-      <n-tabs type="line" animated>
+      <n-tabs type="line" @active-name-change="handleActiveTabChange" animated>
         <n-tab-pane name="query" tab="查找">
           <!-- 搜索框 -->
-          <query-bar @query="handleQuery" @create="openCreateStudentFormModal" @import="openUploadModal" />
+          <query-bar
+            @query="handleQuery"
+            @create="openCreateStudentFormModal"
+            @import="openUploadModal"
+          />
         </n-tab-pane>
         <n-tab-pane name="pick-name" tab="点名">
           <!-- 点名框 -->
-          <pick-name-bar />
+          <pick-name-bar
+            :pick-status="picker.status.value"
+            @run="picker.run"
+            @pause="picker.pause"
+            @select="picker.select"
+            @reset="picker.reset"
+          />
         </n-tab-pane>
         <n-tab-pane name="settings" tab="设置">
           <!-- 设置框 -->
@@ -83,13 +104,22 @@ getStudentList();
     <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
       <n-gi v-for="item in studentList" :key="item.id">
-        <student-item :student="item" @delete="handleDeleteStudent" @edit="handleEditStudent"
-          @detail="openStudentScoreDetailsModal" />
+        <student-item
+          :student="item"
+          :focus="picker.currentFocusValue.value === item.id"
+          :selected="picker.selectedList.value.has(item.id)"
+          @delete="handleDeleteStudent"
+          @edit="handleEditStudent"
+          @detail="openStudentScoreDetailsModal"
+        />
       </n-gi>
     </n-grid>
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
-  <edit-student-form-modal ref="editStudentFormModalRef" @success="getStudentList" />
+  <edit-student-form-modal
+    ref="editStudentFormModalRef"
+    @success="getStudentList"
+  />
   <student-score-details-modal ref="studentScoreDetailsModalRef" />
 </template>
