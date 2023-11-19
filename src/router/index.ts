@@ -4,7 +4,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/",
     component: () => import("@/views/home/index.vue"),
-    meta: { title: "easy 八宝箱" },
+    meta: { title: "easy 八宝箱", keepAlive: true },
   },
   {
     path: "/score-type-manager",
