@@ -1,10 +1,25 @@
 import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", component: () => import("@/views/home/index.vue") },
+  {
+    path: "/",
+    component: () => import("@/views/home/index.vue"),
+    meta: { title: "easy 八宝箱" },
+  },
+  {
+    path: "/score-type-manager",
+    component: () => import("@/views/score-type-manager/index.vue"),
+    meta: { title: "分数类型管理" },
+  },
   {
     path: "/group-manager",
     component: () => import("@/views/group-manager/index.vue"),
+    meta: { title: "分组管理" },
+  },
+  {
+    path: "/student-manager",
+    component: () => import("@/views/student-manager/index.vue"),
+    meta: { title: "学生管理" },
   },
 ];
 

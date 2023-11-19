@@ -7,14 +7,11 @@ import {
   ArrowBackRound,
 } from "@vicons/material";
 
-defineProps<{
-  title: string;
-}>();
-
 const route = useRoute();
 const router = useRouter();
 
 const canGoBack = computed(() => route.path !== "/");
+const title = computed(()=>route.meta.title||'easy 八宝箱')
 </script>
 
 <template>
