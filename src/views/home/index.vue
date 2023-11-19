@@ -14,6 +14,10 @@ const message = useMessage();
 let queryParams: StudentApi.StudentQueryVO = {};
 
 const studentList = ref<StudentApi.Student[]>([]);
+const studentIdMap = computed(() =>
+  new Map(studentList.value.map((student) => [student.id, student]))
+);
+
 const getStudentList = async () => {
   studentList.value = await StudentApi.getStudentList(queryParams);
 };
@@ -107,6 +111,21 @@ getStudentList();
         <n-radio-button value="group" label="按分组" />
       </n-radio-group>
     </n-space> -->
+
+    <!-- 已选择的学生列表 -->
+    <n-space v-if="picker.selectedList.value.size" align="center" class="mt-2">
+      <n-el>已选择的学生:</n-el>
+      <n-tag
+        v-for="studentId in picker.selectedList.value"
+        :key="studentId"
+        type="info"
+        @click="openStudentScoreDetailsModal(studentId)"
+        closable
+        @close="picker.unselect(studentId)"
+      >
+        {{ studentIdMap.get(studentId)?.name }}
+      </n-tag>
+    </n-space>
 
     <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">

@@ -66,6 +66,10 @@ export const usePick = (sourceList: Ref<string[]>, timeout: number = 100) => {
     return value;
   };
 
+  const unselect = (value: string) => {
+    selectedList.value.delete(value);
+  }
+
   return {
     selectedList,
     unselectedList,
@@ -74,6 +78,7 @@ export const usePick = (sourceList: Ref<string[]>, timeout: number = 100) => {
     pause,
     reset,
     select,
+    unselect,
     status,
   };
 };
