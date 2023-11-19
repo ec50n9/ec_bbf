@@ -30,7 +30,7 @@ const emit = defineEmits<{
     <template #header>
       <n-el>{{ student.name }}</n-el>
     </template>
-    <template #header-extra>
+    <template v-if="false" #header-extra>
       <n-space size="small">
         <!-- 编辑 -->
         <n-button
