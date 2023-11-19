@@ -101,6 +101,13 @@ getStudentList();
       </n-tabs>
     </n-el>
 
+    <!-- <n-space align="center" class="mt-2">
+      <n-radio-group name="radiobuttongroup1" size="small">
+        <n-radio-button value="stu" label="按学生" />
+        <n-radio-button value="group" label="按分组" />
+      </n-radio-group>
+    </n-space> -->
+
     <!-- 学生列表 -->
     <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
       <n-gi v-for="item in studentList" :key="item.id">
