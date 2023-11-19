@@ -15,7 +15,7 @@ import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
       分数类型管理
     </n-button>
 
-    <n-button
+    <!-- <n-button
       type="info"
       secondary
       @click="$router.push('/group-manager')"
@@ -24,9 +24,9 @@ import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
         <n-icon><score-type-icon /></n-icon>
       </template>
       分组管理
-    </n-button>
+    </n-button> -->
 
-    <n-button
+    <!-- <n-button
       type="warning"
       secondary
       @click="$router.push('/student-manager')"
@@ -35,6 +35,6 @@ import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
         <n-icon><score-type-icon /></n-icon>
       </template>
       学生管理
-    </n-button>
+    </n-button> -->
   </n-space>
 </template>
