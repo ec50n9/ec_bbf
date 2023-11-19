@@ -2,8 +2,8 @@ use rusqlite::{Connection, Result};
 
 /// 初始化数据库
 pub fn init_db() -> Result<Connection> {
-    // let db_path = "./db.sqlite";
-    let db_path = "D://db.sqlite";
+    let db_path = "./db.sqlite";
+    // let db_path = "D://db.sqlite";
     let conn = Connection::open(db_path)?;
     conn.execute(
         "CREATE TABLE IF NOT EXISTS student (

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 
 export type ScoreType = {
-  id: string;
+  id?: string;
   name: string;
   desc: string;
   max: number;
@@ -20,6 +20,15 @@ export type ScoreTypeCreateVO = {
   desc: string;
   max: number;
 };
+
+/**
+ * 根据分数类型的ID获取分数类型
+ *
+ * @param id - 分数类型的ID
+ * @return 分数类型
+ */
+export const getScoreTypeById = (id: ScoreType["id"]) =>
+  invoke<ScoreType>("get_score_type_by_id", { id });
 
 /**
  * 创建一个分数类型

@@ -35,6 +35,29 @@ pub fn get_score_type_list(
     Ok(score_iter.collect())
 }
 
+/// 获取单个分数类型
+#[tauri::command]
+pub fn get_score_type_by_id(
+    state: tauri::State<'_, crate::AppState>,
+    id: String,
+) -> Result<ScoreType, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+    let query_sql = "SELECT id, name, desc, max FROM score_type WHERE id = ?";
+    let mut stmt = conn.prepare(query_sql).expect("sql预处理出错");
+    let score_type = stmt
+        .query_row([id], |row| {
+            Ok(ScoreType {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                desc: row.get(2)?,
+                max: row.get(3)?,
+            })
+        })
+        .expect("转换结果出错");
+
+    Ok(score_type)
+}
+
 /// 用于创建分数类型的结构体
 #[derive(Serialize, Deserialize)]
 pub struct ScoreTypeCreateVO {
@@ -107,7 +130,7 @@ pub fn update_score_type(
 
     // 组装sql
     let query_sql = format!(
-        "UPDATE student SET {} WHERE id = ?",
+        "UPDATE score_type SET {} WHERE id = ?",
         update_fields.join(", ")
     );
 
@@ -124,7 +147,7 @@ pub fn update_score_type(
 #[tauri::command]
 pub fn delete_score_type(
     state: tauri::State<'_, crate::AppState>,
-    id: usize,
+    id: String,
 ) -> Result<usize, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
