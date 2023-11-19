@@ -24,17 +24,17 @@ const emit = defineEmits<{
   <n-thing
     ref="itemRef"
     class="p-3 bg-white b rd-2 outline-2 outline-blue-3 cursor-pointer transition duration-300 hover:shadow-lg"
-    :class="{'bg-blue-1!': selected, 'outline bg-blue-1!': focus }"
+    :class="{ 'bg-blue-1!': selected, 'outline bg-blue-1!': focus }"
     @click="emit('detail', student.id)"
   >
     <template #header>
       <n-el>{{ student.name }}</n-el>
     </template>
-    <template v-if="false" #header-extra>
-      <n-space size="small">
+    <template #header-extra>
+      <n-el>
         <!-- 编辑 -->
         <n-button
-          secondary
+        quaternary
           circle
           size="small"
           type="warning"
@@ -51,7 +51,7 @@ const emit = defineEmits<{
           @positive-click="emit('delete', student.id)"
         >
           <template #trigger>
-            <n-button secondary circle size="small" type="error" @click.stop>
+            <n-button quaternary circle size="small" type="error" @click.stop>
               <template #icon>
                 <n-icon><delete-icon /></n-icon>
               </template>
@@ -59,7 +59,7 @@ const emit = defineEmits<{
           </template>
           删除了就没有了喔
         </n-popconfirm>
-      </n-space>
+      </n-el>
     </template>
     <template #description>{{ student.stu_no }}</template>
     <template v-if="false" #action>
