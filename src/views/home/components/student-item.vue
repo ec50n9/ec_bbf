@@ -24,7 +24,7 @@ const emit = defineEmits<{
   <n-thing
     ref="itemRef"
     class="p-3 bg-white b rd-2 outline-2 outline-blue-3 cursor-pointer transition duration-300 hover:shadow-lg"
-    :class="{ outline: focus || selected, 'outline-blue-7!': selected }"
+    :class="{'bg-blue-1!': selected, 'outline bg-blue-1!': focus }"
     @click="emit('detail', student.id)"
   >
     <template #header>
