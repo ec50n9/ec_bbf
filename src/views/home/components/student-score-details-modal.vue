@@ -49,6 +49,12 @@ const open = async (id: Student["id"]) => {
 };
 defineExpose({ open });
 
+/** 如果传入的值是NAN，返回0 */
+const safeNumber = (value: number) => {
+  if (Number.isNaN(value)) return 0;
+  return value;
+};
+
 /**
  * 计算学生对应分数类型的百分比
  * @param scoreType 分数类型
@@ -56,17 +62,17 @@ defineExpose({ open });
 const getScorePercentage = (scoreType: ScoreType) => {
   const score = scoreMap.value.get(scoreType.id);
   if (!score) return 0;
-  return Math.round((score / scoreType.max) * 100);
+  return safeNumber(Math.round((score / scoreType.max) * 100));
 };
 
 /** 综合评分 */
 const totalScore = computed(() => {
-  const percentage = Math.round(
+  const percentage = safeNumber(Math.round(
     scoreTypeList.value.reduce(
       (total, curr) => total + getScorePercentage(curr),
       0
     ) / scoreTypeList.value.length
-  );
+  ));
 
   let text = "一般般啊小老弟";
   let icon = "i-fluent-emoji:call-me-hand";
