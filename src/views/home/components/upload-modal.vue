@@ -69,7 +69,10 @@ const convertXlsxFile = async (file: File): Promise<StudentCreateVO[]> => {
   );
   // 检查数据
   if (dataList.length && dataList.every((item) => item.name && item.stu_no))
-    return dataList;
+    return dataList.map((item) => ({
+      name: item.name + "",
+      stu_no: item.stu_no + "",
+    }));
   return [];
 };
 
