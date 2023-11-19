@@ -30,10 +30,12 @@ fn main() {
                 create_student,
                 batch_create_student,
                 get_student_list,
-                get_student_by_id, update_student,
+                get_student_by_id,
+                update_student,
                 delete_student
             }, score::{
                 get_score_type_list,
+                get_score_type_by_id,
                 create_score_type,
                 update_score_type,
                 delete_score_type,
