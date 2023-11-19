@@ -4,25 +4,27 @@ import {
   MinimizeRound,
   MaximizeRound,
   CloseRound,
-  // ArrowBackRound,
+  ArrowBackRound,
 } from "@vicons/material";
-// import { useRouter } from "vue-router";
 
 defineProps<{
   title: string;
 }>();
 
-// const router = useRouter();
+const route = useRoute();
+const router = useRouter();
+
+const canGoBack = computed(() => route.path !== "/");
 </script>
 
 <template>
   <div data-tauri-drag-region class="px-5 py-2 flex items-center gap-3 b-b">
     <!-- 返回按钮 -->
-    <!-- <NButton class="shrink-0" quaternary circle @click="router.back()">
+    <NButton v-if="canGoBack" class="shrink-0" quaternary circle @click="router.back()">
       <template #icon>
-        <NIcon class="c-gray-7"><ArrowBackRound /></NIcon>
+        <n-icon class="c-gray-7"><arrow-back-round /></n-icon>
       </template>
-    </NButton> -->
+    </NButton>
 
     <div class="text-2xl i-fluent-emoji:avocado" />
 
