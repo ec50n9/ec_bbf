@@ -57,7 +57,9 @@ const handlePause = () => emit("pause");
         round
         @click="handleRun"
       >
-        <template #icon><play-icon /></template>
+        <template #icon>
+          <n-icon><play-icon /></n-icon>
+        </template>
         {{ runBtnText }}
       </n-button>
       <n-button
@@ -67,7 +69,9 @@ const handlePause = () => emit("pause");
         round
         @click="handleSelect"
       >
-        <template #icon><check-icon /></template>
+        <template #icon>
+          <n-icon><check-icon /></n-icon>
+        </template>
         抽取
       </n-button>
       <n-button
@@ -77,7 +81,9 @@ const handlePause = () => emit("pause");
         round
         @click="handlePause"
       >
-        <template #icon><pause-icon /></template>
+        <template #icon>
+          <n-icon><pause-icon /></n-icon>
+        </template>
         暂停
       </n-button>
       <n-button
@@ -87,7 +93,9 @@ const handlePause = () => emit("pause");
         round
         @click="handleReset"
       >
-        <template #icon><reset-icon /></template>
+        <template #icon>
+          <n-icon><reset-icon /></n-icon>
+        </template>
         重置
       </n-button>
     </n-space>

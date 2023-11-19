@@ -29,7 +29,7 @@ const validateQueryFormAndSearch = async () => {
 </script>
 
 <template>
-  <n-form ref="queryFormRef" inline :label-width="40" :model="queryFormValue" :rules="queryFormRules" size="small"
+  <n-form ref="queryFormRef" inline :label-width="50" :model="queryFormValue" :rules="queryFormRules" size="small"
     label-placement="left">
     <n-form-item label="学号" path="stu_no">
       <n-input v-model:value="queryFormValue.stu_no" placeholder="请输入学号" />

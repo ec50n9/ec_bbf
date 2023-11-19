@@ -4,8 +4,15 @@ import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
 
 <template>
   <n-space class="px-1 pb-1">
-    <n-button type="primary" secondary round>
-      <template #icon><score-type-icon /></template>
+    <n-button
+      type="primary"
+      secondary
+      round
+      @click="$router.push('/group-manager')"
+    >
+      <template #icon>
+        <n-icon><score-type-icon /></n-icon>
+      </template>
       配置分数类型
     </n-button>
   </n-space>
