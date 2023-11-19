@@ -75,7 +75,7 @@ getStudentList();
 <template>
   <n-space class="p-3" vertical>
     <n-el class="px-5 pt-1 pb-3 b rd-3">
-      <n-tabs type="line" @active-name-change="handleActiveTabChange" animated>
+      <n-tabs type="line" @update:value="handleActiveTabChange" animated>
         <n-tab-pane name="query" tab="查找">
           <!-- 搜索框 -->
           <query-bar
