@@ -4,6 +4,7 @@ import { WebviewWindow } from "@tauri-apps/api/window";
 
 const openTimerWindow = () => {
   const webview = new WebviewWindow("timer", {
+    title: "计时器",
     url: "/timer",
   });
   webview.once("tauri://created", () => {
@@ -32,7 +33,7 @@ const openTimerWindow = () => {
       <template #icon>
         <n-icon><score-type-icon /></n-icon>
       </template>
-      定时器
+      计时器
     </n-button>
 
     <!-- <n-button

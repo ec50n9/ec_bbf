@@ -12,8 +12,12 @@
   "dependencies": {
     "@tauri-apps/api": "^1.5.0",
     "@unocss/reset": "^0.57.1",
+    "@vueuse/core": "^10.6.1",
+    "animate.css": "^4.1.1",
+    "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "pinia": "^2.1.7",
+    "utc": "link:dayjs/plugin/utc",
     "vue": "^3.3.4",
     "vue-router": "4",
     "xlsx": "^0.18.5"
