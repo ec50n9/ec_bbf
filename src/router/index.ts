@@ -21,6 +21,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/student-manager/index.vue"),
     meta: { title: "学生管理" },
   },
+  {
+    path: "/timer",
+    component: () => import("@/views/timer/index.vue"),
+    meta: { title: "定时器" },
+  }
 ];
 
 const router = createRouter({

@@ -1,5 +1,18 @@
 <script lang="ts" setup>
 import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
+import { WebviewWindow } from "@tauri-apps/api/window";
+
+const openTimerWindow = () => {
+  const webview = new WebviewWindow("timer", {
+    url: "/timer",
+  });
+  webview.once("tauri://created", () => {
+    console.log("timer window created");
+  });
+  webview.once("tauri://error", (e) => {
+    console.log("timer window error: ", e);
+  });
+};
 </script>
 
 <template>
@@ -13,6 +26,13 @@ import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
         <n-icon><score-type-icon /></n-icon>
       </template>
       分数类型管理
+    </n-button>
+
+    <n-button type="info" secondary @click="openTimerWindow">
+      <template #icon>
+        <n-icon><score-type-icon /></n-icon>
+      </template>
+      定时器
     </n-button>
 
     <!-- <n-button
