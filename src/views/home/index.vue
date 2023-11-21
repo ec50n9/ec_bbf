@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { RefreshRound as ResetIcon } from "@vicons/material";
 import * as StudentApi from "@/api/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
@@ -14,8 +15,8 @@ const message = useMessage();
 let queryParams: StudentApi.StudentQueryVO = {};
 
 const studentList = ref<StudentApi.Student[]>([]);
-const studentIdMap = computed(() =>
-  new Map(studentList.value.map((student) => [student.id, student]))
+const studentIdMap = computed(
+  () => new Map(studentList.value.map((student) => [student.id, student]))
 );
 
 const getStudentList = async () => {
@@ -124,6 +125,12 @@ getStudentList();
         @close="picker.unselect(studentId)"
       >
         {{ studentIdMap.get(studentId)?.name }}
+      </n-tag>
+      <n-tag type="error" @click="picker.reset()">
+        <template #icon>
+          <n-icon><reset-icon /></n-icon>
+        </template>
+        重置
       </n-tag>
     </n-space>
 
