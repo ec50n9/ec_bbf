@@ -30,8 +30,10 @@ const handleQuery = async (params: StudentApi.StudentQueryVO) => {
 };
 
 // 编辑学生
-const handleEditStudent = (id: StudentApi.Student["id"]) =>
+const handleEditStudent = (id: StudentApi.Student["id"]) => {
+  console.log("edit: ", id);
   editStudentFormModalRef.value?.open("update", id);
+};
 
 // 删除学生
 const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
@@ -141,8 +143,6 @@ getStudentList();
           :student="item"
           :focus="picker.currentFocusValue.value === item.id"
           :selected="picker.selectedList.value.has(item.id)"
-          @delete="handleDeleteStudent"
-          @edit="handleEditStudent"
           @detail="openStudentScoreDetailsModal"
         />
       </n-gi>
@@ -154,5 +154,9 @@ getStudentList();
     ref="editStudentFormModalRef"
     @success="getStudentList"
   />
-  <student-score-details-modal ref="studentScoreDetailsModalRef" />
+  <student-score-details-modal
+    ref="studentScoreDetailsModalRef"
+    @delete="handleDeleteStudent"
+    @edit="handleEditStudent"
+  />
 </template>

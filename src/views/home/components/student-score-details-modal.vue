@@ -12,11 +12,18 @@ import { getStudentById } from "@/api/student";
 import {
   PlusRound as PlusIcon,
   MinusRound as MinusIcon,
+  DeleteOutlineRound as DeleteIcon,
+  ModeOutlined as EditIcon,
 } from "@vicons/material";
 import { changeColor } from "seemly";
 import * as echarts from "echarts";
 import { useThemeVars } from "naive-ui";
 import ScoreActionModal from "./score-action-modal.vue";
+
+const emit = defineEmits<{
+  (e: "delete", id: Student["id"]): void;
+  (e: "edit", id: Student["id"]): void;
+}>();
 
 const themeVars = useThemeVars();
 
@@ -44,8 +51,7 @@ const open = async (id: Student["id"]) => {
   studentInfo.value = await getStudentById(id);
   await refreshData();
 
-  const test = await getDailyScoreByStudentId(id, "2023-09-01", "2024-09-01");
-  console.log(test);
+  // const test = await getDailyScoreByStudentId(id, "2023-09-01", "2024-09-01");
 };
 defineExpose({ open });
 
@@ -60,19 +66,21 @@ const safeNumber = (value: number) => {
  * @param scoreType 分数类型
  */
 const getScorePercentage = (scoreType: ScoreType) => {
-  const score = scoreMap.value.get(scoreType.id);
+  const score = scoreMap.value.get(scoreType.id!);
   if (!score) return 0;
   return safeNumber(Math.round((score / scoreType.max) * 100));
 };
 
 /** 综合评分 */
 const totalScore = computed(() => {
-  const percentage = safeNumber(Math.round(
-    scoreTypeList.value.reduce(
-      (total, curr) => total + getScorePercentage(curr),
-      0
-    ) / scoreTypeList.value.length
-  ));
+  const percentage = safeNumber(
+    Math.round(
+      scoreTypeList.value.reduce(
+        (total, curr) => total + getScorePercentage(curr),
+        0
+      ) / scoreTypeList.value.length
+    )
+  );
 
   let text = "一般般啊小老弟";
   let icon = "i-fluent-emoji:call-me-hand";
@@ -125,7 +133,7 @@ const handlePlus = async (
 ) => {
   await addScore({
     student_id: studentId.value!,
-    score_type_id: scoreTypeId,
+    score_type_id: scoreTypeId!,
     action_value: plusValue,
     reason,
   });
@@ -139,7 +147,6 @@ const handlePlus = async (
 function getVirtualData(year: string) {
   const date = +echarts.time.parse(year + "-09-01");
   const end = +echarts.time.parse(+year + 1 + "-01-07");
-  console.log(year + 1, end);
   const dayTime = 3600 * 24 * 1000;
   const data: [string, number][] = [];
   for (let time = date; time <= end; time += dayTime) {
@@ -255,6 +262,38 @@ watch(visible, (value) => {
       footer: false,
     }"
   >
+    <template #header-extra>
+      <n-space class="mr-3">
+        <!-- 编辑 -->
+        <n-button
+          secondary
+          circle
+          size="small"
+          type="warning"
+          @click.stop="emit('edit', studentId!)"
+        >
+          <template #icon>
+            <n-icon><edit-icon /></n-icon>
+          </template>
+        </n-button>
+        <!-- 删除 -->
+        <n-popconfirm
+          negative-text="取消"
+          positive-text="确定"
+          @positive-click="emit('delete', studentId!)"
+        >
+          <template #trigger>
+            <n-button secondary circle size="small" type="error" @click.stop>
+              <template #icon>
+                <n-icon><delete-icon /></n-icon>
+              </template>
+            </n-button>
+          </template>
+          删除了就没有了喔
+        </n-popconfirm>
+      </n-space>
+    </template>
+
     <!-- 每日加分情况 -->
     <!-- <div id="myChartDiv" class="w-full h-58"></div> -->
 
@@ -293,7 +332,7 @@ watch(visible, (value) => {
               :indicator-placement="'inside'"
               :rail-color="changeColor(themeVars.infoColor, { alpha: 0.2 })"
             >
-              <n-el>{{ scoreMap.get(item.id) || 0 }} 分</n-el>
+              <n-el>{{ scoreMap.get(item.id!) || 0 }} 分</n-el>
             </n-progress>
           </template>
           {{ item.desc }}
@@ -306,7 +345,7 @@ watch(visible, (value) => {
             secondary
             size="small"
             circle
-            :disabled="!scoreMap.get(item.id)"
+            :disabled="!scoreMap.get(item.id!)"
             @click="
               scoreActionModalRef?.open({
                 action: 'minus',
@@ -315,7 +354,7 @@ watch(visible, (value) => {
                 scoreTypeId: item.id,
                 scoreTypeName: item.name,
                 max: item.max,
-                currentScore: scoreMap.get(item.id)||0,
+                currentScore: scoreMap.get(item.id!)||0,
               })
             "
           >
@@ -330,7 +369,7 @@ watch(visible, (value) => {
             secondary
             size="small"
             circle
-            :disabled="scoreMap.get(item.id) === item.max"
+            :disabled="scoreMap.get(item.id!) === item.max"
             @click="
               scoreActionModalRef?.open({
                 action: 'plus',
@@ -339,7 +378,7 @@ watch(visible, (value) => {
                 scoreTypeId: item.id,
                 scoreTypeName: item.name,
                 max: item.max,
-                currentScore: scoreMap.get(item.id)||0,
+                currentScore: scoreMap.get(item.id!)||0,
               })
             "
           >
