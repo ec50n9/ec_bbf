@@ -136,8 +136,8 @@ getStudentList();
       </n-tag>
     </n-space>
 
-    <!-- 学生列表 -->
-    <n-grid class="mt-2" x-gap="12" y-gap="12" :cols="4">
+    <!-- 学生列表（网格布局 -->
+    <!-- <n-grid class="mt-2" x-gap="12" y-gap="12" cols="2 s:4 m:5 l:6 xl:7 2xl:8" responsive="screen">
       <n-gi v-for="item in studentList" :key="item.id">
         <student-item
           :student="item"
@@ -146,7 +146,19 @@ getStudentList();
           @detail="openStudentScoreDetailsModal"
         />
       </n-gi>
-    </n-grid>
+    </n-grid> -->
+
+    <!-- 学生列表（flex布局 -->
+    <n-el class="mt-2 flex flex-wrap gap-3">
+      <student-item
+        v-for="item in studentList"
+        :key="item.id"
+        :student="item"
+        :focus="picker.currentFocusValue.value === item.id"
+        :selected="picker.selectedList.value.has(item.id)"
+        @detail="openStudentScoreDetailsModal"
+      />
+    </n-el>
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />

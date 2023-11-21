@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import {
-  PlusRound as PlusIcon,
-} from "@vicons/material";
 import { Student } from "@/api/student";
 import { NThing } from "naive-ui";
 
@@ -19,23 +16,11 @@ const emit = defineEmits<{
 <template>
   <n-thing
     ref="itemRef"
-    class="p-3 bg-white b rd-2 outline-2 outline-blue-3 cursor-pointer transition duration-300 hover:shadow-lg"
+    class="py-3 px-5 bg-white b rd-2 outline-2 outline-blue-3 cursor-pointer transition duration-300 hover:shadow-lg"
     :class="{ 'bg-blue-1!': selected, 'outline bg-blue-1!': focus }"
     @click="emit('detail', student.id)"
   >
-    <template #header>
-      <n-el>{{ student.name }}</n-el>
-    </template>
-    <template #description>{{ student.stu_no }}</template>
-    <template v-if="false" #action>
-      <n-space>
-        <n-button strong secondary size="small" type="primary" round>
-          <template #icon>
-            <n-icon><plus-icon /></n-icon>
-          </template>
-          加分
-        </n-button>
-      </n-space>
-    </template>
+    <n-el tag="span" class="c-gray-4">{{ student.stu_no }}.</n-el>
+    <n-el tag="span" class="inline-block ml-1">{{ student.name }}</n-el>
   </n-thing>
 </template>
