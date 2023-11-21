@@ -4,7 +4,7 @@ import TitleBar from "@/components/title-bar.vue";
 
 <template>
   <div class="h-screen flex flex-col c-gray-7">
-    <title-bar class="shrink-0" />
+    <title-bar v-if="false" class="shrink-0" />
     <n-message-provider>
       <div class="grow basis-0 bg-white of-auto">
         <router-view v-slot="{ Component }">
