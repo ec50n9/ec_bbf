@@ -3,7 +3,7 @@ import { RefreshRound as ResetIcon } from "@vicons/material";
 import * as StudentApi from "@/api/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
-import SettingsBar from "./bars/settings-bar.vue";
+import ToolsBar from "./bars/tools-bar.vue";
 import UploadModal from "./components/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
 import EditStudentFormModal from "./components/edit-student-form-modal.vue";
@@ -101,9 +101,9 @@ getStudentList();
             @reset="picker.reset"
           />
         </n-tab-pane>
-        <n-tab-pane name="settings" tab="设置">
+        <n-tab-pane name="settings" tab="小工具">
           <!-- 设置框 -->
-          <settings-bar />
+          <tools-bar />
         </n-tab-pane>
       </n-tabs>
     </n-el>

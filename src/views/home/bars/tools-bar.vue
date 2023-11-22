@@ -1,6 +1,19 @@
 <script lang="ts" setup>
-import { FormatListBulletedRound as ScoreTypeIcon } from "@vicons/material";
+import { FormatListBulletedRound as ScoreTypeIcon, AvTimerRound as TimerIcon } from "@vicons/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
+
+const openScoreTypeManagerWindow = () => {
+  const webview = new WebviewWindow("score-type-manager", {
+    title: "分数类型管理",
+    url: "/score-type-manager",
+  });
+  webview.once("tauri://created", () => {
+    console.log("score type manager window created");
+  });
+  webview.once("tauri://error", (e) => {
+    console.log("score type manager window error: ", e);
+  });
+};
 
 const openTimerWindow = () => {
   const webview = new WebviewWindow("timer", {
@@ -21,7 +34,8 @@ const openTimerWindow = () => {
     <n-button
       type="primary"
       secondary
-      @click="$router.push('/score-type-manager')"
+      round
+      @click="openScoreTypeManagerWindow"
     >
       <template #icon>
         <n-icon><score-type-icon /></n-icon>
@@ -29,9 +43,9 @@ const openTimerWindow = () => {
       分数类型管理
     </n-button>
 
-    <n-button type="info" secondary @click="openTimerWindow">
+    <n-button type="info" secondary round @click="openTimerWindow">
       <template #icon>
-        <n-icon><score-type-icon /></n-icon>
+        <n-icon><timer-icon /></n-icon>
       </template>
       计时器
     </n-button>
