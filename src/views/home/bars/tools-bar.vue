@@ -60,16 +60,5 @@ const openTimerWindow = () => {
       </template>
       分组管理
     </n-button> -->
-
-    <!-- <n-button
-      type="warning"
-      secondary
-      @click="$router.push('/student-manager')"
-    >
-      <template #icon>
-        <n-icon><score-type-icon /></n-icon>
-      </template>
-      学生管理
-    </n-button> -->
   </n-space>
 </template>
