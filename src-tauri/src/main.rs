@@ -21,6 +21,7 @@ pub struct AppState {
 /** 入口函数 */
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_sql::Builder::default().build())
         .setup(|app| {
             set_window_shadow(app);
             Ok(())

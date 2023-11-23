@@ -1,6 +1,10 @@
 <script lang="ts" setup>
-import { FormatListBulletedRound as ScoreTypeIcon, AvTimerRound as TimerIcon } from "@vicons/material";
+import {
+  FormatListBulletedRound as ScoreTypeIcon,
+  AvTimerRound as TimerIcon,
+} from "@vicons/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
+import { useDB } from "@/db";
 
 const openScoreTypeManagerWindow = () => {
   const webview = new WebviewWindow("score-type-manager", {
@@ -27,6 +31,19 @@ const openTimerWindow = () => {
     console.log("timer window error: ", e);
   });
 };
+
+const test = async () => {
+  const db = await useDB();
+
+  // const insertRes = await db.execute("INSERT INTO student VALUES (?, ?, ?)", [
+  //   1,
+  //   "001",
+  //   "张三",
+  // ]);
+  // console.log("insertRes: ", insertRes);
+  const result = await db.select("SELECT * FROM student");
+  console.log("result: ", result);
+};
 </script>
 
 <template>
@@ -49,6 +66,8 @@ const openTimerWindow = () => {
       </template>
       计时器
     </n-button>
+
+    <n-button type="warning" secondary round @click="test">数据库</n-button>
 
     <!-- <n-button
       type="info"
