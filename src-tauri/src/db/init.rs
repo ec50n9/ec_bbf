@@ -41,5 +41,20 @@ pub fn init_db() -> Result<Connection> {
               );",
         [],
     )?;
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS student_group (
+            id          TEXT     PRIMARY KEY,
+            name        TEXT     NOT NULL,
+            desc        TEXT     NOT NULL DEFAULT ''
+        );",
+        [],
+    )?;
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS student_group_mapping (
+            student_id  TEXT     NOT NULL,
+            group_id    TEXT     NOT NULL
+        )",
+        [],
+    )?;
     Ok(conn)
 }

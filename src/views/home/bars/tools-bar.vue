@@ -4,7 +4,7 @@ import {
   AvTimerRound as TimerIcon,
 } from "@vicons/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
-import { useDB } from "@/db";
+// import { useDB } from "@/db";
 
 const openScoreTypeManagerWindow = () => {
   const webview = new WebviewWindow("score-type-manager", {
@@ -19,31 +19,30 @@ const openScoreTypeManagerWindow = () => {
   });
 };
 
-const openTimerWindow = () => {
-  const webview = new WebviewWindow("timer", {
+const openTimerWindow = () =>
+  new WebviewWindow("timer", {
     title: "计时器",
     url: "/timer",
   });
-  webview.once("tauri://created", () => {
-    console.log("timer window created");
-  });
-  webview.once("tauri://error", (e) => {
-    console.log("timer window error: ", e);
-  });
-};
 
-const test = async () => {
-  const db = await useDB();
+const openGroupManagerWindow = () =>
+  new WebviewWindow("group-manager", {
+    title: "分组管理",
+    url: "/group-manager",
+  });
 
-  // const insertRes = await db.execute("INSERT INTO student VALUES (?, ?, ?)", [
-  //   1,
-  //   "001",
-  //   "张三",
-  // ]);
-  // console.log("insertRes: ", insertRes);
-  const result = await db.select("SELECT * FROM student");
-  console.log("result: ", result);
-};
+// const test = async () => {
+//   const db = await useDB();
+
+//   const insertRes = await db.execute("INSERT INTO student VALUES (?, ?, ?)", [
+//     1,
+//     "001",
+//     "张三",
+//   ]);
+//   console.log("insertRes: ", insertRes);
+//   const result = await db.select("SELECT * FROM student");
+//   console.log("result: ", result);
+// };
 </script>
 
 <template>
@@ -67,17 +66,11 @@ const test = async () => {
       计时器
     </n-button>
 
-    <n-button type="warning" secondary round @click="test">数据库</n-button>
-
-    <!-- <n-button
-      type="info"
-      secondary
-      @click="$router.push('/group-manager')"
-    >
+    <n-button type="warning" secondary round @click="openGroupManagerWindow">
       <template #icon>
         <n-icon><score-type-icon /></n-icon>
       </template>
       分组管理
-    </n-button> -->
+    </n-button>
   </n-space>
 </template>

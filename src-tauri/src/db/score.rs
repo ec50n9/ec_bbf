@@ -80,7 +80,7 @@ pub fn create_score_type(
         .prepare("INSERT INTO score_type (id, name, desc, max) VALUES (?, ?, ?, ?)")
         .expect("sql预处理出错");
     stmt.insert([id.clone(), name, desc, max.to_string()])
-        .expect("");
+        .expect("插入数据失败");
     Ok(id)
 }
 
@@ -138,7 +138,7 @@ pub fn update_score_type(
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
     // 执行
     let rows = stmt
-        .execute(params_from_iter(params.iter()))
+        .execute(params_from_iter(params))
         .expect("更新失败");
     Ok(rows)
 }

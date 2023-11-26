@@ -8,6 +8,7 @@ mod db;
 use db::init_db;
 use db::score;
 use db::student;
+use db::student_group;
 
 // 窗口阴影
 mod utils;
@@ -43,6 +44,14 @@ fn main() {
                 add_score,
                 get_score_list_by_student_id,
                 get_daily_score_by_student_id
+            }, student_group::{
+                get_student_group_list,
+                get_student_group_by_id,
+                create_student_group,
+                update_student_group,
+                delete_student_group,
+                bind_student_group,
+                unbind_student_group
             }
         ])
         .manage(AppState {
