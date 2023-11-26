@@ -6,7 +6,6 @@ import {
   getScoreListByStudentId,
   getScoreTypeList,
   addScore,
-  getDailyScoreByStudentId,
 } from "@/api/score";
 import { getStudentById } from "@/api/student";
 import {
@@ -54,6 +53,11 @@ const open = async (id: Student["id"]) => {
   // const test = await getDailyScoreByStudentId(id, "2023-09-01", "2024-09-01");
 };
 defineExpose({ open });
+
+const handleDelete = (studentId: Student['id']) => {
+  emit("delete", studentId);
+  visible.value = false;
+};
 
 /** 如果传入的值是NAN，返回0 */
 const safeNumber = (value: number) => {
@@ -280,7 +284,7 @@ watch(visible, (value) => {
         <n-popconfirm
           negative-text="取消"
           positive-text="确定"
-          @positive-click="emit('delete', studentId!)"
+          @positive-click="handleDelete(studentId!)"
         >
           <template #trigger>
             <n-button secondary circle size="small" type="error" @click.stop>
