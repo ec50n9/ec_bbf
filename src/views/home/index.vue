@@ -149,7 +149,10 @@ getStudentList();
     </n-grid> -->
 
     <!-- 学生列表（flex布局 -->
-    <n-el class="mt-2 flex flex-wrap gap-3">
+    <n-el
+      v-if="studentList && studentList.length"
+      class="mt-2 flex flex-wrap gap-3"
+    >
       <student-item
         v-for="item in studentList"
         :key="item.id"
@@ -159,6 +162,8 @@ getStudentList();
         @detail="openStudentScoreDetailsModal"
       />
     </n-el>
+
+    <n-empty v-else class="pt-10" description="什么都没有" />
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
