@@ -113,21 +113,26 @@ getStudentList();
         </n-tab-pane>
 
         <template #suffix>
-          <n-button
-            secondary
-            :type="appStore.isAlwaysOnTop ? 'warning' : 'info'"
-            size="small"
-            round
-            @click="appStore.toggleAlwaysOnTop"
-          >
-            <template #icon>
-              <n-icon>
-                <pin-on-icon v-if="appStore.isAlwaysOnTop" />
-                <pin-off-icon v-else />
-              </n-icon>
+          <n-tooltip trigger="hover" :delay="500">
+            <template #trigger>
+              <n-button
+                type="info"
+                :dashed="!appStore.isAlwaysOnTop"
+                :secondary="appStore.isAlwaysOnTop"
+                size="small"
+                circle
+                @click="appStore.toggleAlwaysOnTop"
+              >
+                <template #icon>
+                  <n-icon>
+                    <pin-on-icon v-if="appStore.isAlwaysOnTop" />
+                    <pin-off-icon v-else />
+                  </n-icon>
+                </template>
+              </n-button>
             </template>
-            {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶" }}
-          </n-button>
+            {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶窗口" }}
+          </n-tooltip>
         </template>
       </n-tabs>
     </n-el>
