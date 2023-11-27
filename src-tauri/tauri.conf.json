@@ -4,7 +4,7 @@
     "beforeBuildCommand": "pnpm build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
-    "withGlobalTauri": false
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "ec_bbf",
@@ -27,7 +27,7 @@
         "minimize": true,
         "print": false,
         "requestUserAttention": false,
-        "setAlwaysOnTop": false,
+        "setAlwaysOnTop": true,
         "setClosable": false,
         "setContentProtected": false,
         "setCursorGrab": false,
@@ -71,13 +71,14 @@
     },
     "windows": [
       {
-        "label": "customization",
+        "label": "main",
         "fullscreen": false,
         "resizable": true,
         "title": "ec_bbf",
         "width": 800,
         "height": 600,
-        "decorations": true
+        "decorations": true,
+        "alwaysOnTop": false
       }
     ]
   }

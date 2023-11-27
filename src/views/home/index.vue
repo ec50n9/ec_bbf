@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import { RefreshRound as ResetIcon } from "@vicons/material";
+import {
+  RefreshRound as ResetIcon,
+  PushPinTwotone as PinOffIcon,
+  PinOffTwotone as PinOnIcon,
+} from "@vicons/material";
 import * as StudentApi from "@/api/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
@@ -9,8 +13,10 @@ import StudentItem from "./components/student-item.vue";
 import EditStudentFormModal from "./components/edit-student-form-modal.vue";
 import StudentScoreDetailsModal from "./components/student-score-details-modal.vue";
 import { usePick } from "@/composables/pick";
+import { useAppStore } from "@/store/modules/app";
 
 const message = useMessage();
+const appStore = useAppStore();
 
 let queryParams: StudentApi.StudentQueryVO = {};
 
@@ -105,6 +111,24 @@ getStudentList();
           <!-- 设置框 -->
           <tools-bar />
         </n-tab-pane>
+
+        <template #suffix>
+          <n-button
+            secondary
+            :type="appStore.isAlwaysOnTop ? 'warning' : 'info'"
+            size="small"
+            round
+            @click="appStore.toggleAlwaysOnTop"
+          >
+            <template #icon>
+              <n-icon>
+                <pin-on-icon v-if="appStore.isAlwaysOnTop" />
+                <pin-off-icon v-else />
+              </n-icon>
+            </template>
+            {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶" }}
+          </n-button>
+        </template>
       </n-tabs>
     </n-el>
 

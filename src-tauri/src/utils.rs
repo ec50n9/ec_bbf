@@ -3,7 +3,7 @@ use window_shadows::set_shadow;
 
 /// 设置窗口阴影
 pub fn set_window_shadow<R: Runtime>(app: &tauri::App<R>) {
-    let window = app.get_window("customization").unwrap();
+    let window = app.get_window("main").unwrap();
     set_shadow(&window, true).expect("Unsupported platform!")
 }
 
