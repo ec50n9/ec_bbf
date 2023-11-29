@@ -4,7 +4,6 @@ export type Student = {
   id: string;
   stu_no: string;
   name: string;
-  is_delete: boolean;
 };
 
 export type StudentQueryVO = Partial<Pick<Student, "name" | "stu_no">>;

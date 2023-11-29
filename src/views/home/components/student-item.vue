@@ -4,8 +4,8 @@ import { NThing } from "naive-ui";
 
 defineProps<{
   student: Student;
-  focus: boolean;
-  selected: boolean;
+  focus?: boolean;
+  selected?: boolean;
 }>();
 
 const emit = defineEmits<{

@@ -1,20 +1,13 @@
 <script lang="ts" setup>
 import { VueDraggable } from "vue-draggable-plus";
+import StudentItem from "./components/student-item.vue";
+import { Student } from "@/api/student";
 
 const groupList = ref([
   {
     name: "小组1",
     id: 1,
-    students: [
-      {
-        name: "Joao",
-        id: 1,
-      },
-      {
-        name: "Jean",
-        id: 2,
-      },
-    ],
+    students: [],
   },
   {
     name: "小组2",
@@ -34,18 +27,21 @@ const groupList = ref([
 ]);
 
 /** 未分组 */
-const ungroupStudentList = ref([
+const ungroupStudentList = ref<Student[]>([
   {
+    id: "1",
+    stu_no: "1",
     name: "Johanna",
-    id: 3,
   },
   {
+    id: "2",
+    stu_no: "2",
     name: "Juan",
-    id: 4,
   },
   {
+    id: "3",
+    stu_no: "3",
     name: "Jorge",
-    id: 5,
   },
 ]);
 
@@ -69,21 +65,19 @@ const handleSave = () => {
       <n-layout-content content-style="padding: 24px;">
         <n-el class="flex flex-wrap justify-between gap-3">
           <n-el v-for="group in groupList" :key="group.id" class="min-w-40">
-            <n-h5>{{ group.name }}</n-h5>
+            <n-el class="c-gray-4">{{ group.name }}</n-el>
             <vue-draggable
               v-model="group.students"
               group="student"
               :animation="150"
               ghost-class="ghost"
-              class="flex flex-col gap-2 p-4 bg-gray-500/5 rounded"
+              class="flex flex-col gap-2 p-3 bg-gray-1 rd-4"
             >
-              <n-el
+              <student-item
                 v-for="item in group.students"
                 :key="item.id"
-                class="cursor-move bg-gray-500/5 rounded p-3 cursor-move"
-              >
-                {{ item.name }}
-              </n-el>
+                :student="item"
+              />
             </vue-draggable>
           </n-el>
         </n-el>
@@ -102,25 +96,24 @@ const handleSave = () => {
       :collapsed-width="100"
       :native-scrollbar="true"
       show-trigger="arrow-circle"
-      content-style="padding: 24px;"
       bordered
     >
-      <n-el class="text-center">未分组</n-el>
-      <vue-draggable
-        v-model="ungroupStudentList"
-        group="student"
-        :animation="150"
-        ghost-class="ghost"
-        class="flex flex-col gap-2 p-4 bg-gray-500/5 rounded"
-      >
-        <n-el
-          v-for="item in ungroupStudentList"
-          :key="item.id"
-          class="cursor-move bg-gray-500/5 rounded p-3 cursor-move"
+      <n-el class="h-full flex flex-col">
+        <n-el class="shrink-0 my-3 text-lg text-center">未分组</n-el>
+        <vue-draggable
+          v-model="ungroupStudentList"
+          group="student"
+          :animation="150"
+          ghost-class="ghost"
+          class="basis-0 grow of-auto flex flex-col gap-2 p-3 bg-gray-1 rounded"
         >
-          {{ item.name }}
-        </n-el>
-      </vue-draggable>
+          <student-item
+            v-for="item in ungroupStudentList"
+            :key="item.id"
+            :student="item"
+          />
+        </vue-draggable>
+      </n-el>
     </n-layout-sider>
   </n-layout>
 </template>
