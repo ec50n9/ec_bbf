@@ -29,6 +29,7 @@ const openGroupManagerWindow = () =>
   new WebviewWindow("group-manager", {
     title: "分组管理",
     url: "/group-manager",
+    fileDropEnabled: false,
   });
 
 // const test = async () => {

@@ -20,6 +20,7 @@
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1",
     "utc": "link:dayjs/plugin/utc",
     "vue": "^3.3.4",
+    "vue-draggable-plus": "^0.2.7",
     "vue-router": "4",
     "xlsx": "^0.18.5"
   },
