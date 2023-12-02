@@ -51,7 +51,9 @@ fn main() {
                 update_student_group,
                 delete_student_group,
                 bind_student_group,
-                unbind_student_group
+                unbind_student_group,
+                get_all_student_group_mapping,
+                batch_update_student_group_rel
             }
         ])
         .manage(AppState {

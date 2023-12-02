@@ -1,11 +1,11 @@
 <script lang="ts" setup>
+import { StudentUpdateVO } from "@/api/student";
 import {
-  ScoreType,
-  createScoreType,
-  updateScoreType,
-  getScoreTypeById,
-  ScoreTypeUpdateVO,
-} from "@/api/score";
+  StudentGroup,
+  createStudentGroup,
+  updateStudentGroup,
+  getStudentGroupById
+} from "@/api/student-group";
 import { FormInst } from "naive-ui";
 
 const emit = defineEmits<{
@@ -24,26 +24,24 @@ const title = computed(
     }[mode.value])
 );
 
-const open = async (id?: ScoreType["id"]) => {
+const open = async (id?: StudentGroup["id"]) => {
   mode.value = id ? "edit" : "create";
   modalVisible.value = true;
 
   if (mode.value === "edit") {
-    formValue.value = await getScoreTypeById(id!);
+    formValue.value = await getStudentGroupById(id!);
   } else {
     formValue.value = {
       name: "",
       desc: "",
-      max: 100,
     };
   }
 };
 defineExpose({ open });
 
-const formValue = ref<ScoreType>({
+const formValue = ref<StudentGroup>({
   name: "",
   desc: "",
-  max: 100,
 });
 const formRules = {
   name: {
@@ -63,9 +61,9 @@ const handleSubmit = async () => {
   formRef.value?.validate(async (errors) => {
     if (!errors) {
       if (mode.value === "create") {
-        await createScoreType(formValue.value);
+        await createStudentGroup(formValue.value);
       } else if (mode.value === "edit") {
-        await updateScoreType(formValue.value as ScoreTypeUpdateVO);
+        await updateStudentGroup(formValue.value as StudentUpdateVO);
       }
       emit("success");
       modalVisible.value = false;
@@ -85,13 +83,6 @@ const handleSubmit = async () => {
     <n-form ref="formRef" :model="formValue" :rules="formRules">
       <n-form-item label="名称" path="name">
         <n-input v-model:value="formValue.name" placeholder="输入名称" />
-      </n-form-item>
-
-      <n-form-item label="最大值" path="max">
-        <n-input-number
-          v-model:value="formValue.max"
-          placeholder="输入最大值"
-        />
       </n-form-item>
 
       <n-form-item label="描述" path="desc">
