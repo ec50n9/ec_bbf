@@ -4,6 +4,7 @@ import StudentItem from "./components/student-item.vue";
 import EditModal from "./components/edit-modal.vue";
 import {
   getStudentGroupList,
+  deleteStudentGroup,
   getAllStudentGroupMapping,
   batchUpdateStudentGroupRel,
   StudentGroup,
@@ -12,6 +13,13 @@ import {
   StudentGroupUnbindVO,
   StudentGroupUpdateRelVO,
 } from "@/api/student-group";
+import {
+  CancelOutlined as CancelIcon,
+  PlusRound as PlusIcon,
+  SaveOutlined as SaveIcon,
+} from "@vicons/material";
+
+const message = useMessage();
 
 /** 已分组 */
 const groupList = ref<(StudentGroup & { students: StudentWithGroupIdVO[] })[]>(
@@ -21,6 +29,7 @@ const groupList = ref<(StudentGroup & { students: StudentWithGroupIdVO[] })[]>(
 /** 未分组 */
 const ungroupStudentList = ref<StudentWithGroupIdVO[]>([]);
 
+/** 保存分组关系 */
 const handleSave = async () => {
   const needBindList: StudentGroupBindVO[] = [];
   const needUnbindList: StudentGroupUnbindVO[] = [];
@@ -28,8 +37,6 @@ const handleSave = async () => {
 
   const groupListValue = unref(groupList);
   const ungroupStudentListValue = unref(ungroupStudentList);
-  console.log("分组：", unref(groupList));
-  console.log("未分组：", unref(ungroupStudentList));
 
   groupListValue.forEach((group) => {
     group.students.forEach((student) => {
@@ -59,24 +66,39 @@ const handleSave = async () => {
     }
   });
 
-  console.log("needBindList", needBindList);
-  console.log("needUnbindList", needUnbindList);
-  console.log("needUpdateList", needUpdateRelList);
-
-  const res = await batchUpdateStudentGroupRel({
+  await batchUpdateStudentGroupRel({
     needBindList,
     needUnbindList,
     needUpdateRelList,
   });
-  console.log("更新完成：", res);
-
-  init();
 };
 
 const editModalRef = ref<typeof EditModal>();
 const open = (id?: string) => editModalRef.value?.open(id);
 
+/** 删除分组 */
+const handleDelete = async (groupId: string) => {
+  const group = groupList.value.find((group) => group.id === groupId);
+  if (group!.students.length > 0) {
+    message.error("该分组下有学生无法删除");
+    return;
+  }
+
+  await deleteStudentGroup(groupId);
+  init();
+};
+
+/** 学生被右键点击 */
+const handleStudentItemRightClick = (
+  students: StudentWithGroupIdVO[],
+  student: StudentWithGroupIdVO
+) => {
+  students.splice(students.indexOf(student), 1);
+  ungroupStudentList.value.unshift(student);
+};
+
 const init = async () => {
+  await handleSave();
   console.log("init...");
   const allGroupList = await getStudentGroupList();
   const studentWithGroupIdList = await getAllStudentGroupMapping();
@@ -107,18 +129,58 @@ init();
       <!-- 标题栏 -->
       <n-layout-header bordered>
         <n-space class="p-3">
-          <n-button type="primary" @click="open()">添加</n-button>
-          <n-button @click="handleSave">保存</n-button>
+          <n-button secondary type="info" round @click="open()">
+            <template #icon>
+              <n-icon><plus-icon /></n-icon>
+            </template>
+            添加
+          </n-button>
+          <n-button
+            secondary
+            type="primary"
+            round
+            @click="
+              () => {
+                handleSave();
+                init();
+              }
+            "
+          >
+            <template #icon>
+              <n-icon><save-icon /></n-icon>
+            </template>
+            保存
+          </n-button>
         </n-space>
       </n-layout-header>
 
       <!-- 分组列表 -->
       <n-layout-content content-style="padding: 24px;">
         <n-el
+          v-if="groupList.length"
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3"
         >
           <n-el v-for="group in groupList" :key="group.id" class="min-w-40">
-            <n-el class="c-gray-4">{{ group.name }}</n-el>
+            <n-el class="flex justify-between items-center">
+              <n-el class="c-gray-4" @click="open(group.id)">{{
+                group.name
+              }}</n-el>
+              <!-- 删除分组 -->
+              <n-popconfirm
+                negative-text="取消"
+                positive-text="确认"
+                @positive-click="handleDelete(group.id!)"
+              >
+                <template #trigger>
+                  <n-button class="c-gray-3" size="small" quaternary circle>
+                    <template #icon>
+                      <n-icon><cancel-icon /></n-icon>
+                    </template>
+                  </n-button>
+                </template>
+                删除了就没有了哦
+              </n-popconfirm>
+            </n-el>
             <vue-draggable
               v-model="group.students"
               group="student"
@@ -130,10 +192,19 @@ init();
                 v-for="item in group.students"
                 :key="item.student_id"
                 :student="item"
+                @contextmenu.prevent="
+                  handleStudentItemRightClick(group.students, item)
+                "
               />
             </vue-draggable>
           </n-el>
         </n-el>
+
+        <n-empty v-else description="一个分组都没有呢">
+          <template #extra>
+            <n-button size="small" @click="open()">创建一个</n-button>
+          </template>
+        </n-empty>
       </n-layout-content>
 
       <!-- 底部栏 -->
