@@ -135,17 +135,7 @@ init();
             </template>
             添加
           </n-button>
-          <n-button
-            secondary
-            type="primary"
-            round
-            @click="
-              () => {
-                handleSave();
-                init();
-              }
-            "
-          >
+          <n-button secondary type="primary" round @click="init()">
             <template #icon>
               <n-icon><save-icon /></n-icon>
             </template>
@@ -209,7 +199,7 @@ init();
 
       <!-- 底部栏 -->
       <n-layout-footer bordered>
-        <n-space class="px-3">拖拽来排序吧...</n-space>
+        <n-space class="px-3">拖拽以排序、右键以删除、点击分组名称以修改</n-space>
       </n-layout-footer>
     </n-layout>
 
