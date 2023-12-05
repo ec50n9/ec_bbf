@@ -71,6 +71,8 @@ const handleSave = async () => {
     needUnbindList,
     needUpdateRelList,
   });
+
+  message.success("保存成功");
 };
 
 const editModalRef = ref<typeof EditModal>();
