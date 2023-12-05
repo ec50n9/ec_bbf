@@ -8,10 +8,10 @@ import * as StudentApi from "@/api/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
 import ToolsBar from "./bars/tools-bar.vue";
-import UploadModal from "./components/upload-modal.vue";
+import UploadModal from "./modals/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
-import EditStudentFormModal from "./components/edit-student-form-modal.vue";
-import StudentScoreDetailsModal from "./components/student-score-details-modal.vue";
+import EditStudentFormModal from "./modals/edit-student-form-modal.vue";
+import StudentScoreDetailsModal from "./modals/student-score-details.vue";
 import { usePick } from "@/composables/pick";
 import { useAppStore } from "@/store/modules/app";
 

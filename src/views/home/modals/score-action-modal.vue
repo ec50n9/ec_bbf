@@ -10,7 +10,6 @@ export type Option = {
   scoreTypeId: ScoreType["id"];
   scoreTypeName: ScoreType["name"];
   currentScore: number;
-  max: ScoreType["max"];
 };
 
 const emit = defineEmits<{
@@ -29,7 +28,6 @@ const state = ref<Option>({
   scoreTypeId: "",
   scoreTypeName: "",
   currentScore: 0,
-  max: 0,
 });
 
 const actionText = computed(() =>
@@ -52,11 +50,6 @@ const formRules = computed<any>(() => ({
     trigger: ["input", "blur"],
     message: `请输入${actionText.value}分分数`,
   },
-  // reason: {
-  //   required: true,
-  //   trigger: ["input", "blur"],
-  //   message: `请输入${actionText.value}分原因`,
-  // },
 }));
 
 // 弹窗相关
@@ -93,11 +86,16 @@ defineExpose({ open });
       size="medium"
       label-placement="left"
     >
+      <n-form-item label="操作">
+        <n-radio-group v-model:value="state.action" size="small">
+          <n-radio-button value="plus">加分</n-radio-button>
+          <n-radio-button value="minus">扣分</n-radio-button>
+        </n-radio-group>
+      </n-form-item>
       <n-form-item :label="`${actionText}分分数`" path="actionValue">
         <n-input-number
           v-model:value="formValue.actionValue"
           :min="1"
-          :max="state.action === 'plus' ? state.max : state.currentScore"
           :placeholder="`${actionText}多少分`"
         />
       </n-form-item>
