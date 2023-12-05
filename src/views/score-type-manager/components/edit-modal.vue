@@ -34,7 +34,6 @@ const open = async (id?: ScoreType["id"]) => {
     formValue.value = {
       name: "",
       desc: "",
-      max: 100,
     };
   }
 };
@@ -43,7 +42,6 @@ defineExpose({ open });
 const formValue = ref<ScoreType>({
   name: "",
   desc: "",
-  max: 100,
 });
 const formRules = {
   name: {
@@ -87,18 +85,31 @@ const handleSubmit = async () => {
         <n-input v-model:value="formValue.name" placeholder="输入名称" />
       </n-form-item>
 
-      <n-form-item label="最大值" path="max">
-        <n-input-number
-          v-model:value="formValue.max"
-          placeholder="输入最大值"
-        />
-      </n-form-item>
-
       <n-form-item label="描述" path="desc">
         <n-input
           v-model:value="formValue.desc"
           type="textarea"
           placeholder="输入描述"
+        />
+      </n-form-item>
+
+      <n-form-item label="图标" path="icon">
+        <n-input
+          v-model:value="formValue.icon"
+          placeholder="输入描述"
+        />
+      </n-form-item>
+
+      <n-form-item label="颜色" path="color">
+        <n-color-picker
+          v-model:value="formValue.color"
+          :swatches="[
+            '#FFFFFF',
+            '#18A058',
+            '#2080F0',
+            '#F0A020',
+            'rgba(208, 48, 80, 1)',
+          ]"
         />
       </n-form-item>
     </n-form>

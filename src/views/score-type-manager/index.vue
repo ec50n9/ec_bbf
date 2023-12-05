@@ -9,8 +9,19 @@ const columns = [
     key: "name",
   },
   {
-    title: "满分",
-    key: "max",
+    title: "图标",
+    key: "icon",
+  },
+  {
+    title: "颜色",
+    key: "color",
+    render(row: any) {
+      return (
+        <n-el tag="span" class="px-2 py-1" style={{ backgroundColor: row.color, color: "white" }}>
+          {row.color}
+        </n-el>
+      );
+    },
   },
   {
     title: "描述",
@@ -36,11 +47,7 @@ const columns = [
             onPositiveClick={() => del(row.id)}
             v-slots={{
               trigger: () => (
-                <n-button
-                  type="error"
-                  secondary
-                  size="small"
-                >
+                <n-button type="error" secondary size="small">
                   删除
                 </n-button>
               ),
@@ -82,7 +89,7 @@ init();
       </n-button>
     </n-space>
 
-    <n-data-table :columns="columns" :data="data" >
+    <n-data-table :columns="columns" :data="data">
       <template #empty>
         <n-empty description="暂无数据" />
       </template>

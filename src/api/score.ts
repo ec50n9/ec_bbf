@@ -4,7 +4,8 @@ export type ScoreType = {
   id?: string;
   name: string;
   desc: string;
-  max: number;
+  icon?: string;
+  color?: string;
 };
 
 /**
@@ -18,7 +19,8 @@ export const getScoreTypeList = () =>
 export type ScoreTypeCreateVO = {
   name: string;
   desc: string;
-  max: number;
+  icon?: string;
+  color?: string;
 };
 
 /**
@@ -43,7 +45,8 @@ export type ScoreTypeUpdateVO = {
   id: string;
   name?: string;
   desc?: string;
-  max?: number;
+  icon?: string;
+  color?: string;
 };
 
 /**
