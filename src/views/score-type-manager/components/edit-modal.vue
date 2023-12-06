@@ -1,11 +1,11 @@
 <script lang="ts" setup>
+import { ScoreType, ScoreTypeUpdateVO } from "@/apis/types/score";
 import {
-  ScoreType,
   createScoreType,
   updateScoreType,
   getScoreTypeById,
-  ScoreTypeUpdateVO,
-} from "@/api/score";
+} from "@/apis/modules/score";
+import { useRequest } from "alova";
 import { FormInst } from "naive-ui";
 
 const emit = defineEmits<{
@@ -24,25 +24,24 @@ const title = computed(
     }[mode.value])
 );
 
+const {
+  data: formValue,
+  loading,
+  send: fetchScoreType,
+} = useRequest(getScoreTypeById, { immediate: false });
+
 const open = async (id?: ScoreType["id"]) => {
   mode.value = id ? "edit" : "create";
   modalVisible.value = true;
 
-  if (mode.value === "edit") {
-    formValue.value = await getScoreTypeById(id!);
-  } else {
-    formValue.value = {
-      name: "",
-      desc: "",
-    };
-  }
+  formValue.value = {
+    name: "",
+    desc: "",
+  };
+  if (mode.value === "edit") fetchScoreType(id!);
 };
 defineExpose({ open });
 
-const formValue = ref<ScoreType>({
-  name: "",
-  desc: "",
-});
 const formRules = {
   name: {
     required: true,
@@ -57,17 +56,31 @@ const formRules = {
   },
 } as any;
 
+const {
+  send: submit,
+  loading: submitLoading,
+  onSuccess: onSubmitSuccess,
+} = useRequest(
+  () => {
+    let res: any = null;
+    if (mode.value === "edit") {
+      res = updateScoreType(formValue.value as ScoreTypeUpdateVO);
+    } else {
+      res = createScoreType(formValue.value);
+    }
+    return res;
+  },
+  { immediate: false }
+);
+
+onSubmitSuccess(() => {
+  modalVisible.value = false;
+  emit("success");
+});
+
 const handleSubmit = async () => {
   formRef.value?.validate(async (errors) => {
-    if (!errors) {
-      if (mode.value === "create") {
-        await createScoreType(formValue.value);
-      } else if (mode.value === "edit") {
-        await updateScoreType(formValue.value as ScoreTypeUpdateVO);
-      }
-      emit("success");
-      modalVisible.value = false;
-    }
+    if (!errors) submit();
   });
 };
 </script>
@@ -80,44 +93,45 @@ const handleSubmit = async () => {
     :title="title"
     @close="modalVisible = false"
   >
-    <n-form ref="formRef" :model="formValue" :rules="formRules">
-      <n-form-item label="名称" path="name">
-        <n-input v-model:value="formValue.name" placeholder="输入名称" />
-      </n-form-item>
+    <n-spin :show="loading">
+      <n-form ref="formRef" :model="formValue" :rules="formRules">
+        <n-form-item label="名称" path="name">
+          <n-input v-model:value="formValue.name" placeholder="输入名称" />
+        </n-form-item>
 
-      <n-form-item label="描述" path="desc">
-        <n-input
-          v-model:value="formValue.desc"
-          type="textarea"
-          placeholder="输入描述"
-        />
-      </n-form-item>
+        <n-form-item label="描述" path="desc">
+          <n-input
+            v-model:value="formValue.desc"
+            type="textarea"
+            placeholder="输入描述"
+          />
+        </n-form-item>
 
-      <n-form-item label="图标" path="icon">
-        <n-input
-          v-model:value="formValue.icon"
-          placeholder="输入描述"
-        />
-      </n-form-item>
+        <n-form-item label="图标" path="icon">
+          <n-input v-model:value="formValue.icon" placeholder="输入描述" />
+        </n-form-item>
 
-      <n-form-item label="颜色" path="color">
-        <n-color-picker
-          v-model:value="formValue.color"
-          :swatches="[
-            '#FFFFFF',
-            '#18A058',
-            '#2080F0',
-            '#F0A020',
-            'rgba(208, 48, 80, 1)',
-          ]"
-        />
-      </n-form-item>
-    </n-form>
+        <n-form-item label="颜色" path="color">
+          <n-color-picker
+            v-model:value="formValue.color"
+            :swatches="[
+              '#FFFFFF',
+              '#18A058',
+              '#2080F0',
+              '#F0A020',
+              'rgba(208, 48, 80, 1)',
+            ]"
+          />
+        </n-form-item>
+      </n-form>
+    </n-spin>
 
     <template #footer>
       <n-space justify="end">
         <n-button @click="modalVisible = false">取消</n-button>
-        <n-button type="primary" @click="handleSubmit">确定</n-button>
+        <n-button type="primary" @click="handleSubmit" :loading="submitLoading"
+          >确定</n-button
+        >
       </n-space>
     </template>
   </n-modal>

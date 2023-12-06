@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { Student } from "@/api/student";
+import { Score, ScoreType } from "@/apis/types/score";
 import {
-  Score,
-  ScoreType,
   getScoreListByStudentId,
   getScoreTypeList,
   addScore,
-} from "@/api/score";
+} from "@/apis/modules/score";
 import { getStudentById } from "@/api/student";
 import {
   DeleteOutlineRound as DeleteIcon,

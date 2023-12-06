@@ -10,9 +10,11 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@alova/mock": "^1.5.0",
     "@tauri-apps/api": "^1.5.0",
     "@unocss/reset": "^0.57.1",
     "@vueuse/core": "^10.6.1",
+    "alova": "^2.15.0",
     "animate.css": "^4.1.1",
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",

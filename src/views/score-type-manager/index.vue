@@ -1,7 +1,8 @@
 <script lang="tsx" setup>
 import { PlusRound as PlusIcon } from "@vicons/material";
-import { ScoreType, getScoreTypeList, deleteScoreType } from "@/api/score";
+import { getScoreTypeList, deleteScoreType } from "@/apis/modules/score";
 import EditModal from "./components/edit-modal.vue";
+import { useRequest } from "alova";
 
 const columns = [
   {
@@ -17,7 +18,11 @@ const columns = [
     key: "color",
     render(row: any) {
       return (
-        <n-el tag="span" class="px-2 py-1" style={{ backgroundColor: row.color, color: "white" }}>
+        <n-el
+          tag="span"
+          class="px-2 py-1"
+          style={{ backgroundColor: row.color, color: "white" }}
+        >
           {row.color}
         </n-el>
       );
@@ -31,6 +36,7 @@ const columns = [
     title: "操作",
     key: "actions",
     render(row: any) {
+      const show = ref(false);
       return (
         <n-space>
           <n-button
@@ -42,14 +48,34 @@ const columns = [
             编辑
           </n-button>
           <n-popconfirm
+            v-model:show={show.value}
             negative-text="取消"
             positive-text="确定"
-            onPositiveClick={() => del(row.id)}
             v-slots={{
               trigger: () => (
                 <n-button type="error" secondary size="small">
                   删除
                 </n-button>
+              ),
+              action: () => (
+                <n-space>
+                  <n-button
+                    size="small"
+                    onClick={() => {
+                      show.value = false;
+                    }}
+                  >
+                    取消
+                  </n-button>
+                  <n-button
+                    type="error"
+                    size="small"
+                    onClick={() => del(row.id)}
+                    loading={delScoreTypeLoading.value}
+                  >
+                    确定
+                  </n-button>
+                </n-space>
               ),
             }}
           >
@@ -60,22 +86,29 @@ const columns = [
     },
   },
 ];
-const data = ref<ScoreType[]>([]);
 
-const init = async () => {
-  data.value = await getScoreTypeList();
-};
+const {
+  data: scoreTypeList,
+  loading: scoreTypeListLoading,
+  send: fetchScoreTypeList,
+} = useRequest(getScoreTypeList);
+
+const { send: delScoreType, loading: delScoreTypeLoading } = useRequest(
+  deleteScoreType,
+  {
+    immediate: false,
+  }
+);
 
 const editModalRef = ref<typeof EditModal>();
 const open = (id?: string) => editModalRef.value?.open(id);
 
+const currId = ref<string>("");
 const del = async (id: string) => {
-  console.log(id);
-  await deleteScoreType(id);
-  await init();
+  currId.value = id;
+  await delScoreType(id);
+  await fetchScoreTypeList();
 };
-
-init();
 </script>
 
 <template>
@@ -89,11 +122,15 @@ init();
       </n-button>
     </n-space>
 
-    <n-data-table :columns="columns" :data="data">
+    <n-data-table
+      :columns="columns"
+      :data="scoreTypeList"
+      :loading="scoreTypeListLoading"
+    >
       <template #empty>
         <n-empty description="暂无数据" />
       </template>
     </n-data-table>
-    <edit-modal ref="editModalRef" @success="init" />
+    <edit-modal ref="editModalRef" @success="fetchScoreTypeList" />
   </n-space>
 </template>
