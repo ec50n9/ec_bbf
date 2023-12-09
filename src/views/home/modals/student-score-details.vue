@@ -61,8 +61,8 @@ const visible = ref(false);
 const open = async (id: Student["id"]) => {
   visible.value = true;
   studentId.value = id;
+  refreshData();
   studentInfo.value = await getStudentById(id);
-  await refreshData();
 
   // const test = await getDailyScoreByStudentId(id, "2023-09-01", "2024-09-01");
 };

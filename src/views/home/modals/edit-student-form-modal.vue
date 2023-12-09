@@ -1,7 +1,12 @@
 <script lang="ts" setup>
-import { Student, StudentCreateVO, StudentUpdateVO } from "@/api/student";
+import {
+  Student,
+  StudentCreateVO,
+  StudentUpdateVO,
+} from "@/apis/types/student";
 import { FormInst, FormRules } from "naive-ui";
-import { createStudent, updateStudent, getStudentById } from "@/api/student";
+import * as StudentApi from "@/apis/modules/student";
+import { useRequest } from "alova";
 
 const emit = defineEmits<{
   (e: "success"): void;
@@ -19,6 +24,21 @@ const modalTitle = computed(
       create: "添加学生",
       update: "编辑学生",
     }[openType.value])
+);
+
+const { send: getStudentById, loading: getStudentByIdLoading } = useRequest(
+  StudentApi.getStudentById,
+  {
+    immediate: false,
+  }
+);
+const { send: createStudent, loading: createStudentLoading } = useRequest(
+  StudentApi.createStudent,
+  { immediate: false }
+);
+const { send: updateStudent, loading: updateStudentLoading } = useRequest(
+  StudentApi.updateStudent,
+  { immediate: false }
 );
 
 /** 打开弹窗 */
@@ -85,34 +105,41 @@ const handleSubmit = () => {
       footer: false,
     }"
   >
-    <n-form
-      ref="formRef"
-      :model="model"
-      :rules="rules"
-      class="max-w-80 mx-auto"
-      label-width="auto"
-      label-placement="left"
-    >
-      <n-form-item path="name" label="姓名">
-        <n-input
-          v-model:value="model.name"
-          placeholder="请输入姓名"
-          @keydown.enter.prevent
-        />
-      </n-form-item>
-      <n-form-item path="stu_no" label="学号">
-        <n-input
-          v-model:value="model.stu_no"
-          placeholder="请输入学号"
-          @keydown.enter.prevent
-        />
-      </n-form-item>
-    </n-form>
+    <n-spin :show="getStudentByIdLoading">
+      <n-form
+        ref="formRef"
+        :model="model"
+        :rules="rules"
+        class="max-w-80 mx-auto"
+        label-width="auto"
+        label-placement="left"
+      >
+        <n-form-item path="name" label="姓名">
+          <n-input
+            v-model:value="model.name"
+            placeholder="请输入姓名"
+            @keydown.enter.prevent
+          />
+        </n-form-item>
+        <n-form-item path="stu_no" label="学号">
+          <n-input
+            v-model:value="model.stu_no"
+            placeholder="请输入学号"
+            @keydown.enter.prevent
+          />
+        </n-form-item>
+      </n-form>
+    </n-spin>
 
     <template #footer>
       <n-space justify="end">
         <n-button @click="visible = false">取消</n-button>
-        <n-button type="primary" @click="handleSubmit">确定</n-button>
+        <n-button
+          type="primary"
+          :loading="createStudentLoading || updateStudentLoading"
+          @click="handleSubmit"
+          >确定</n-button
+        >
       </n-space>
     </template>
   </n-modal>
