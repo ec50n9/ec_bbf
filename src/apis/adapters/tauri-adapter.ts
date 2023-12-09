@@ -1,8 +1,9 @@
 import { createAlovaMockAdapter } from "@alova/mock";
 import GlobalFetch from "alova/GlobalFetch";
-import score from "@/mock/score";
+import scoreMock from "@/mock/score";
+import studentMock from "@/mock/student";
 
-const tauriMockAdapter = createAlovaMockAdapter([score], {
+const tauriMockAdapter = createAlovaMockAdapter([scoreMock, studentMock], {
   enable: true,
   httpAdapter: GlobalFetch(),
   delay: 300,

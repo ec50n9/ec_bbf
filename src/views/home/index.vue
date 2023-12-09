@@ -4,7 +4,8 @@ import {
   PushPinTwotone as PinOffIcon,
   PinOffTwotone as PinOnIcon,
 } from "@vicons/material";
-import * as StudentApi from "@/api/student";
+import * as StudentApi from "@/apis/modules/student";
+import { Student, StudentCreateVO, StudentQueryVO } from "@/apis/types/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
 import ToolsBar from "./bars/tools-bar.vue";
@@ -14,47 +15,54 @@ import EditStudentFormModal from "./modals/edit-student-form-modal.vue";
 import StudentScoreDetailsModal from "./modals/student-score-details.vue";
 import { usePick } from "@/composables/pick";
 import { useAppStore } from "@/store/modules/app";
+import { useRequest } from "alova";
 
 const message = useMessage();
 const appStore = useAppStore();
 
-let queryParams: StudentApi.StudentQueryVO = {};
+let queryParams: StudentQueryVO = {};
 
-const studentList = ref<StudentApi.Student[]>([]);
+const {
+  data: studentList,
+  loading: studentListLoading,
+  send: fetchStudentList,
+} = useRequest(() => StudentApi.getStudentList(queryParams), {
+  immediate: true,
+});
+
 const studentIdMap = computed(
   () => new Map(studentList.value.map((student) => [student.id, student]))
 );
 
-const getStudentList = async () => {
-  studentList.value = await StudentApi.getStudentList(queryParams);
-};
-
 // 查询列表
-const handleQuery = async (params: StudentApi.StudentQueryVO) => {
+const handleQuery = async (params: StudentQueryVO) => {
   queryParams = params;
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 编辑学生
-const handleEditStudent = (id: StudentApi.Student["id"]) => {
+const handleEditStudent = (id: Student["id"]) => {
   console.log("edit: ", id);
   editStudentFormModalRef.value?.open("update", id);
 };
 
 // 删除学生
-const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
-  await StudentApi.deleteStudent(id);
+const { send: deleteStudent } = useRequest(
+  StudentApi.deleteStudent,
+  { immediate: false }
+);
+const handleDeleteStudent = async (id: Student["id"]) => {
+  await deleteStudent(id);
   message.success("删除成功");
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 批量创建
-const handleBatchCreateStudent = async (
-  studentList: StudentApi.StudentCreateVO[]
-) => {
-  await StudentApi.batchCreateStudent(studentList);
+const { send: batchCreateStudent } = useRequest(StudentApi.batchCreateStudent, { immediate: false });
+const handleBatchCreateStudent = async (studentList: StudentCreateVO[]) => {
+  await batchCreateStudent(studentList);
   message.success("批量添加成功");
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 上传导入弹窗
@@ -68,7 +76,7 @@ const openCreateStudentFormModal = () =>
 
 // 查看学生分数弹窗
 const studentScoreDetailsModalRef = ref<typeof StudentScoreDetailsModal>();
-const openStudentScoreDetailsModal = (id: StudentApi.Student["id"]) =>
+const openStudentScoreDetailsModal = (id: Student["id"]) =>
   studentScoreDetailsModalRef.value?.open(id);
 
 // 点名相关
@@ -80,9 +88,6 @@ const picker = usePick(studentIds);
 const handleActiveTabChange = (_tab: string) => {
   picker.pause();
 };
-
-// 初始化
-getStudentList();
 </script>
 
 <template>
@@ -165,40 +170,30 @@ getStudentList();
       </n-tag>
     </n-space>
 
-    <!-- 学生列表（网格布局 -->
-    <!-- <n-grid class="mt-2" x-gap="12" y-gap="12" cols="2 s:4 m:5 l:6 xl:7 2xl:8" responsive="screen">
-      <n-gi v-for="item in studentList" :key="item.id">
+    <!-- 学生列表（flex布局 -->
+    <n-spin :show="studentListLoading">
+      <n-el
+        v-if="studentList && studentList.length"
+        class="mt-2 flex flex-wrap gap-3"
+      >
         <student-item
+          v-for="item in studentList"
+          :key="item.id"
           :student="item"
           :focus="picker.currentFocusValue.value === item.id"
           :selected="picker.selectedList.value.has(item.id)"
           @detail="openStudentScoreDetailsModal"
         />
-      </n-gi>
-    </n-grid> -->
+      </n-el>
 
-    <!-- 学生列表（flex布局 -->
-    <n-el
-      v-if="studentList && studentList.length"
-      class="mt-2 flex flex-wrap gap-3"
-    >
-      <student-item
-        v-for="item in studentList"
-        :key="item.id"
-        :student="item"
-        :focus="picker.currentFocusValue.value === item.id"
-        :selected="picker.selectedList.value.has(item.id)"
-        @detail="openStudentScoreDetailsModal"
-      />
-    </n-el>
-
-    <n-empty v-else class="pt-10" description="什么都没有" />
+      <n-empty v-else class="pt-10" description="什么都没有" />
+    </n-spin>
   </n-space>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
   <edit-student-form-modal
     ref="editStudentFormModalRef"
-    @success="getStudentList"
+    @success="fetchStudentList"
   />
   <student-score-details-modal
     ref="studentScoreDetailsModalRef"
