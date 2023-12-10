@@ -17,7 +17,8 @@ pub fn init_db() -> Result<Connection> {
                   id          TEXT     PRIMARY KEY,
                   name        TEXT     NOT NULL,
                   desc        TEXT    DEFAULT '',
-                  max         INTEGER         NOT NULL DEFAULT -1
+                  icon        TEXT,
+                  color       TEXT
               );",
         [],
     )?;

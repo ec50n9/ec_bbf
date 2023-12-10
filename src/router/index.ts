@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
     path: "/timer",
     component: () => import("@/views/timer/index.vue"),
     meta: { title: "定时器" },
-  }
+  },
 ];
 
 const router = createRouter({

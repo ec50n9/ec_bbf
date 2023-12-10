@@ -3,58 +3,69 @@ import {
   RefreshRound as ResetIcon,
   PushPinTwotone as PinOffIcon,
   PinOffTwotone as PinOnIcon,
+  ZoomInMapRound as ZoomInIcon,
+  ZoomOutMapRound as ZoomOutIcon,
 } from "@vicons/material";
-import * as StudentApi from "@/api/student";
+import * as StudentApi from "@/api/modules/student";
+import { Student, StudentCreateVO, StudentQueryVO } from "@/api/types/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
 import ToolsBar from "./bars/tools-bar.vue";
-import UploadModal from "./components/upload-modal.vue";
+import UploadModal from "./modals/upload-modal.vue";
 import StudentItem from "./components/student-item.vue";
-import EditStudentFormModal from "./components/edit-student-form-modal.vue";
-import StudentScoreDetailsModal from "./components/student-score-details-modal.vue";
+import EditStudentFormModal from "./modals/edit-student-form-modal.vue";
+import StudentScoreDetailsModal from "./modals/student-score-details.vue";
 import { usePick } from "@/composables/pick";
 import { useAppStore } from "@/store/modules/app";
+import { useRequest } from "alova";
 
 const message = useMessage();
 const appStore = useAppStore();
 
-let queryParams: StudentApi.StudentQueryVO = {};
+let queryParams: StudentQueryVO = {};
 
-const studentList = ref<StudentApi.Student[]>([]);
+const {
+  data: studentList,
+  loading: studentListLoading,
+  send: fetchStudentList,
+} = useRequest(() => StudentApi.getStudentList(queryParams), {
+  immediate: true,
+});
+
 const studentIdMap = computed(
   () => new Map(studentList.value.map((student) => [student.id, student]))
 );
 
-const getStudentList = async () => {
-  studentList.value = await StudentApi.getStudentList(queryParams);
-};
-
 // 查询列表
-const handleQuery = async (params: StudentApi.StudentQueryVO) => {
+const handleQuery = async (params: StudentQueryVO) => {
   queryParams = params;
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 编辑学生
-const handleEditStudent = (id: StudentApi.Student["id"]) => {
+const handleEditStudent = (id: Student["id"]) => {
   console.log("edit: ", id);
   editStudentFormModalRef.value?.open("update", id);
 };
 
 // 删除学生
-const handleDeleteStudent = async (id: StudentApi.Student["id"]) => {
-  await StudentApi.deleteStudent(id);
+const { send: deleteStudent } = useRequest(StudentApi.deleteStudent, {
+  immediate: false,
+});
+const handleDeleteStudent = async (id: Student["id"]) => {
+  await deleteStudent(id);
   message.success("删除成功");
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 批量创建
-const handleBatchCreateStudent = async (
-  studentList: StudentApi.StudentCreateVO[]
-) => {
-  await StudentApi.batchCreateStudent(studentList);
+const { send: batchCreateStudent } = useRequest(StudentApi.batchCreateStudent, {
+  immediate: false,
+});
+const handleBatchCreateStudent = async (studentList: StudentCreateVO[]) => {
+  await batchCreateStudent(studentList);
   message.success("批量添加成功");
-  await getStudentList();
+  await fetchStudentList();
 };
 
 // 上传导入弹窗
@@ -68,7 +79,7 @@ const openCreateStudentFormModal = () =>
 
 // 查看学生分数弹窗
 const studentScoreDetailsModalRef = ref<typeof StudentScoreDetailsModal>();
-const openStudentScoreDetailsModal = (id: StudentApi.Student["id"]) =>
+const openStudentScoreDetailsModal = (id: Student["id"]) =>
   studentScoreDetailsModalRef.value?.open(id);
 
 // 点名相关
@@ -80,14 +91,11 @@ const picker = usePick(studentIds);
 const handleActiveTabChange = (_tab: string) => {
   picker.pause();
 };
-
-// 初始化
-getStudentList();
 </script>
 
 <template>
-  <n-space class="p-3" vertical>
-    <n-el class="px-5 pt-1 pb-3 b rd-3">
+  <n-el class="p-3 box-border h-full flex flex-col of-auto" vertical>
+    <n-el class="sticky top-0 z-1 px-5 pt-1 pb-3 bg-white b rd-3">
       <n-tabs type="line" @update:value="handleActiveTabChange" animated>
         <n-tab-pane name="query" tab="查找">
           <!-- 搜索框 -->
@@ -101,6 +109,14 @@ getStudentList();
           <!-- 点名框 -->
           <pick-name-bar
             :pick-status="picker.status.value"
+            :content="
+              studentIdMap.get(
+                picker.currentFocusValue.value ||
+                  Array.from(picker.selectedList.value.values())[
+                    picker.selectedList.value.size - 1
+                  ]
+              )?.name
+            "
             @run="picker.run"
             @pause="picker.pause"
             @select="picker.select"
@@ -113,26 +129,51 @@ getStudentList();
         </n-tab-pane>
 
         <template #suffix>
-          <n-tooltip trigger="hover" :delay="500">
-            <template #trigger>
-              <n-button
-                type="info"
-                :dashed="!appStore.isAlwaysOnTop"
-                :secondary="appStore.isAlwaysOnTop"
-                size="small"
-                circle
-                @click="appStore.toggleAlwaysOnTop"
-              >
-                <template #icon>
-                  <n-icon>
-                    <pin-on-icon v-if="appStore.isAlwaysOnTop" />
-                    <pin-off-icon v-else />
-                  </n-icon>
-                </template>
-              </n-button>
-            </template>
-            {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶窗口" }}
-          </n-tooltip>
+          <n-space>
+            <!-- 迷你模式 -->
+            <n-tooltip trigger="hover" :delay="500">
+              <template #trigger>
+                <n-button
+                  type="warning"
+                  :dashed="!appStore.miniWindowMode"
+                  :secondary="appStore.miniWindowMode"
+                  size="small"
+                  circle
+                  @click="appStore.toggleMiniWindowMode()"
+                >
+                  <template #icon>
+                    <n-icon>
+                      <zoom-out-icon v-if="appStore.miniWindowMode" />
+                      <zoom-in-icon v-else />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
+              {{ appStore.miniWindowMode ? "关闭迷你模式" : "开启迷你模式" }}
+            </n-tooltip>
+
+            <!-- 置顶 -->
+            <n-tooltip trigger="hover" :delay="500">
+              <template #trigger>
+                <n-button
+                  type="info"
+                  :dashed="!appStore.isAlwaysOnTop"
+                  :secondary="appStore.isAlwaysOnTop"
+                  size="small"
+                  circle
+                  @click="appStore.toggleAlwaysOnTop"
+                >
+                  <template #icon>
+                    <n-icon>
+                      <pin-on-icon v-if="appStore.isAlwaysOnTop" />
+                      <pin-off-icon v-else />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
+              {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶窗口" }}
+            </n-tooltip>
+          </n-space>
         </template>
       </n-tabs>
     </n-el>
@@ -145,7 +186,11 @@ getStudentList();
     </n-space> -->
 
     <!-- 已选择的学生列表 -->
-    <n-space v-if="picker.selectedList.value.size" align="center" class="mt-2">
+    <n-space
+      v-if="picker.selectedList.value.size || appStore.miniWindowMode"
+      align="center"
+      class="mt-2"
+    >
       <n-el>已选择的学生:</n-el>
       <n-tag
         v-for="studentId in picker.selectedList.value"
@@ -157,48 +202,56 @@ getStudentList();
       >
         {{ studentIdMap.get(studentId)?.name }}
       </n-tag>
-      <n-tag type="error" @click="picker.reset()">
+
+      <n-tag v-if="picker.currentFocusValue.value" type="warning">
+        {{ studentIdMap.get(picker.currentFocusValue.value)?.name }}
+      </n-tag>
+
+      <n-tag
+        v-if="picker.selectedList.value.size"
+        type="error"
+        @click="picker.reset()"
+      >
         <template #icon>
           <n-icon><reset-icon /></n-icon>
         </template>
         重置
       </n-tag>
+
+      <n-tag
+        v-if="
+          !picker.selectedList.value.size && !picker.currentFocusValue.value
+        "
+        class="c-gray-4"
+      >
+        一个都没有呢...
+      </n-tag>
     </n-space>
 
-    <!-- 学生列表（网格布局 -->
-    <!-- <n-grid class="mt-2" x-gap="12" y-gap="12" cols="2 s:4 m:5 l:6 xl:7 2xl:8" responsive="screen">
-      <n-gi v-for="item in studentList" :key="item.id">
+    <!-- 学生列表（flex布局 -->
+    <n-spin v-if="!appStore.miniWindowMode" :show="studentListLoading">
+      <n-el
+        v-if="studentList && studentList.length"
+        class="mt-2 flex flex-wrap gap-3"
+      >
         <student-item
+          v-for="item in studentList"
+          :key="item.id"
           :student="item"
           :focus="picker.currentFocusValue.value === item.id"
           :selected="picker.selectedList.value.has(item.id)"
           @detail="openStudentScoreDetailsModal"
         />
-      </n-gi>
-    </n-grid> -->
+      </n-el>
 
-    <!-- 学生列表（flex布局 -->
-    <n-el
-      v-if="studentList && studentList.length"
-      class="mt-2 flex flex-wrap gap-3"
-    >
-      <student-item
-        v-for="item in studentList"
-        :key="item.id"
-        :student="item"
-        :focus="picker.currentFocusValue.value === item.id"
-        :selected="picker.selectedList.value.has(item.id)"
-        @detail="openStudentScoreDetailsModal"
-      />
-    </n-el>
-
-    <n-empty v-else class="pt-10" description="什么都没有" />
-  </n-space>
+      <n-empty v-else class="pt-10" description="什么都没有" />
+    </n-spin>
+  </n-el>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
   <edit-student-form-modal
     ref="editStudentFormModalRef"
-    @success="getStudentList"
+    @success="fetchStudentList"
   />
   <student-score-details-modal
     ref="studentScoreDetailsModalRef"

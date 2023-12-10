@@ -8,7 +8,8 @@ pub struct ScoreType {
     id: String,
     name: String,
     desc: String,
-    max: i32,
+    icon: Option<String>,
+    color: Option<String>,
 }
 
 /// 获取全部分数类型
@@ -17,7 +18,7 @@ pub fn get_score_type_list(
     state: tauri::State<'_, crate::AppState>,
 ) -> Result<Vec<ScoreType>, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
-    let query_sql = "SELECT id, name, desc, max FROM score_type";
+    let query_sql = "SELECT id, name, desc, icon, color FROM score_type";
 
     let mut stmt = conn.prepare(query_sql).expect("sql预处理出错");
     let score_iter = stmt
@@ -26,7 +27,8 @@ pub fn get_score_type_list(
                 id: row.get(0)?,
                 name: row.get(1)?,
                 desc: row.get(2)?,
-                max: row.get(3)?,
+                icon: row.get(3)?,
+                color: row.get(4)?,
             })
         })
         .expect("转换结果出错")
@@ -42,7 +44,7 @@ pub fn get_score_type_by_id(
     id: String,
 ) -> Result<ScoreType, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
-    let query_sql = "SELECT id, name, desc, max FROM score_type WHERE id = ?";
+    let query_sql = "SELECT id, name, desc, icon, color FROM score_type WHERE id = ?";
     let mut stmt = conn.prepare(query_sql).expect("sql预处理出错");
     let score_type = stmt
         .query_row([id], |row| {
@@ -50,7 +52,8 @@ pub fn get_score_type_by_id(
                 id: row.get(0)?,
                 name: row.get(1)?,
                 desc: row.get(2)?,
-                max: row.get(3)?,
+                icon: row.get(3)?,
+                color: row.get(4)?,
             })
         })
         .expect("转换结果出错");
@@ -63,7 +66,8 @@ pub fn get_score_type_by_id(
 pub struct ScoreTypeCreateVO {
     name: String,
     desc: String,
-    max: i32,
+    icon: Option<String>,
+    color: Option<String>,
 }
 
 /// 创建分数类型
@@ -75,11 +79,35 @@ pub fn create_score_type(
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let id = Uuid::new_v4().to_string();
-    let ScoreTypeCreateVO { name, desc, max } = score_type_create_vo;
-    let mut stmt = conn
-        .prepare("INSERT INTO score_type (id, name, desc, max) VALUES (?, ?, ?, ?)")
-        .expect("sql预处理出错");
-    stmt.insert([id.clone(), name, desc, max.to_string()])
+    let ScoreTypeCreateVO {
+        name,
+        desc,
+        icon,
+        color,
+    } = score_type_create_vo;
+
+    let mut insert_fields = vec!["id", "name", "desc"];
+    let mut params = vec![id.clone(), name, desc];
+
+    if let Some(icon) = icon {
+        insert_fields.push("icon");
+        params.push(icon);
+    }
+    if let Some(color) = color {
+        insert_fields.push("color");
+        params.push(color);
+    }
+
+    let sql = format!(
+        "INSERT INTO score_type ({}) VALUES ({})",
+        insert_fields.join(","),
+        std::iter::repeat("?")
+            .take(params.len())
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    let mut stmt = conn.prepare(&sql).expect("sql预处理出错");
+    stmt.insert(params_from_iter(params.iter()))
         .expect("插入数据失败");
     Ok(id)
 }
@@ -90,7 +118,8 @@ pub struct ScoreTypeUpdateVO {
     id: String,
     name: Option<String>,
     desc: Option<String>,
-    max: Option<i32>,
+    icon: Option<String>,
+    color: Option<String>,
 }
 
 /// 更新学生来源类型
@@ -105,7 +134,8 @@ pub fn update_score_type(
         id,
         name,
         desc,
-        max,
+        icon,
+        color,
     } = score_type_update_vo;
 
     // 字段sql
@@ -122,9 +152,13 @@ pub fn update_score_type(
         update_fields.push("desc = ?");
         params.push(desc);
     }
-    if let Some(max) = max {
-        update_fields.push("max = ?");
-        params.push(max.to_string());
+    if let Some(icon) = icon {
+        update_fields.push("icon = ?");
+        params.push(icon);
+    }
+    if let Some(color) = color {
+        update_fields.push("color = ?");
+        params.push(color);
     }
     params.push(id);
 
@@ -137,9 +171,7 @@ pub fn update_score_type(
     // 预处理
     let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
     // 执行
-    let rows = stmt
-        .execute(params_from_iter(params))
-        .expect("更新失败");
+    let rows = stmt.execute(params_from_iter(params)).expect("更新失败");
     Ok(rows)
 }
 
@@ -174,7 +206,7 @@ pub struct ScorePlusVO {
 pub fn add_score(
     state: tauri::State<'_, crate::AppState>,
     score_plus_vo: ScorePlusVO,
-) -> Result<(), String> {
+) -> Result<i64, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let id = Uuid::new_v4().to_string();
@@ -189,7 +221,7 @@ pub fn add_score(
             "INSERT INTO student_score_record (id, student_id, score_type_id, action_value, reason) VALUES (?, ?, ?, ?, ?)",
         )
         .expect("sql预处理出错");
-    stmt.insert([
+    let rows = stmt.insert([
         id,
         student_id,
         score_type_id,
@@ -198,7 +230,7 @@ pub fn add_score(
     ])
     .expect("插入失败");
 
-    Ok(())
+    Ok(rows)
 }
 
 /// 分数查询出参

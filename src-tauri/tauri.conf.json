@@ -45,7 +45,7 @@
         "setMinimizable": false,
         "setPosition": false,
         "setResizable": false,
-        "setSize": false,
+        "setSize": true,
         "setSkipTaskbar": false,
         "setTitle": false,
         "show": false,

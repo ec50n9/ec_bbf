@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { StudentWithGroupIdVO } from "@/api/student-group";
+import { StudentWithGroupIdVO } from "@/api/types/student-group";
 import { NThing } from "naive-ui";
 
 defineProps<{

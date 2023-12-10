@@ -1,11 +1,8 @@
 <script lang="ts" setup>
-import { StudentUpdateVO } from "@/api/student";
-import {
-  StudentGroup,
-  createStudentGroup,
-  updateStudentGroup,
-  getStudentGroupById
-} from "@/api/student-group";
+import * as StudentGroupApi from "@/api/modules/student-group";
+import { StudentUpdateVO } from "@/api/types/student";
+import { StudentGroup } from "@/api/types/student-group";
+import { useRequest } from "alova";
 import { FormInst } from "naive-ui";
 
 const emit = defineEmits<{
@@ -22,6 +19,27 @@ const title = computed(
       create: "添加",
       edit: "编辑",
     }[mode.value])
+);
+
+const { send: getStudentGroupById } = useRequest(
+  StudentGroupApi.getStudentGroupById,
+  {
+    immediate: false,
+  }
+);
+
+const { send: createStudentGroup } = useRequest(
+  StudentGroupApi.createStudentGroup,
+  {
+    immediate: false,
+  }
+);
+
+const { send: updateStudentGroup } = useRequest(
+  StudentGroupApi.updateStudentGroup,
+  {
+    immediate: false,
+  }
 );
 
 const open = async (id?: StudentGroup["id"]) => {
@@ -61,6 +79,7 @@ const handleSubmit = async () => {
   formRef.value?.validate(async (errors) => {
     if (!errors) {
       if (mode.value === "create") {
+        console.log('create: ', formValue.value);
         await createStudentGroup(formValue.value);
       } else if (mode.value === "edit") {
         await updateStudentGroup(formValue.value as StudentUpdateVO);

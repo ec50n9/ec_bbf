@@ -1,17 +1,10 @@
-import { invoke } from "@tauri-apps/api";
-
-export type Student = {
-  id: string;
-  stu_no: string;
-  name: string;
-};
-
-export type StudentQueryVO = Partial<Pick<Student, "name" | "stu_no">>;
-
-export type StudentCreateVO = Pick<Student, "stu_no" | "name">;
-
-export type StudentUpdateVO = Pick<Student, "id"> &
-  Partial<Omit<Student, "id" | "is_delete">>;
+import {
+  Student,
+  StudentCreateVO,
+  StudentQueryVO,
+  StudentUpdateVO,
+} from "@/api/types/student";
+import { request } from "..";
 
 /**
  * 根据查询参数获取学生列表
@@ -19,14 +12,15 @@ export type StudentUpdateVO = Pick<Student, "id"> &
  * @param query - 查询参数
  * @return 一个包含一个Student数组的Promise
  */
-export const getStudentList = (query: StudentQueryVO) => {
-  const studentQueryVo: any = {};
-  Object.entries(query).map(
-    ([key, value]) => value && (studentQueryVo[key] = value)
-  );
-
-  return invoke<Student[]>("get_student_list", { studentQueryVo });
-};
+export const getStudentList = (query: StudentQueryVO) =>
+  request.Get<Student[]>("students", {
+    params: Object.entries(query).reduce((acc, [key, value]) => {
+      if (value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, any>),
+    name: "student-list",
+    hitSource: /^student/,
+  });
 
 /**
  * 根据学生的ID获取学生
@@ -35,7 +29,7 @@ export const getStudentList = (query: StudentQueryVO) => {
  * @return 学生对象
  */
 export const getStudentById = (id: Student["id"]) =>
-  invoke<Student>("get_student_by_id", { id });
+  request.Get<Student>(`students/${id}`, { name: "student-by-id" });
 
 /**
  * 创建一个新的学生
@@ -44,7 +38,9 @@ export const getStudentById = (id: Student["id"]) =>
  * @return 一个包含一个学生ID的Promise
  */
 export const createStudent = (studentCreateVo: StudentCreateVO) =>
-  invoke<Student["id"]>("create_student", { studentCreateVo });
+  request.Post<Student["id"]>("students", studentCreateVo, {
+    name: "student-create",
+  });
 
 /**
  * 批量创建学生
@@ -53,7 +49,9 @@ export const createStudent = (studentCreateVo: StudentCreateVO) =>
  * @return 一个包含多个学生ID的Promise
  */
 export const batchCreateStudent = (studentCreateVos: StudentCreateVO[]) =>
-  invoke<Student["id"][]>("batch_create_student", { studentCreateVos });
+  request.Post<Student["id"][]>("students/batch", studentCreateVos, {
+    name: "student-batch-create",
+  });
 
 /**
  * 更新学生
@@ -62,7 +60,7 @@ export const batchCreateStudent = (studentCreateVos: StudentCreateVO[]) =>
  * @return 如果更新成功返回true,否则返回false
  */
 export const updateStudent = (studentUpdateVo: StudentUpdateVO) =>
-  invoke<number>("update_student", { studentUpdateVo });
+  request.Put<boolean>("students", studentUpdateVo, { name: "student-update" });
 
 /**
  * 根据学生的ID删除学生。
@@ -71,4 +69,4 @@ export const updateStudent = (studentUpdateVo: StudentUpdateVO) =>
  * @return 如果删除成功返回true,否则返回false
  */
 export const deleteStudent = (id: Student["id"]) =>
-  invoke<boolean>("delete_student", { id });
+  request.Delete<boolean>(`students/${id}`, {}, { name: "student-delete" });

@@ -2,22 +2,20 @@
 import { VueDraggable } from "vue-draggable-plus";
 import StudentItem from "./components/student-item.vue";
 import EditModal from "./components/edit-modal.vue";
-import {
-  getStudentGroupList,
-  deleteStudentGroup,
-  getAllStudentGroupMapping,
-  batchUpdateStudentGroupRel,
-  StudentGroup,
-  StudentWithGroupIdVO,
-  StudentGroupBindVO,
-  StudentGroupUnbindVO,
-  StudentGroupUpdateRelVO,
-} from "@/api/student-group";
+import * as StudentGroupApi from "@/api/modules/student-group";
 import {
   CancelOutlined as CancelIcon,
   PlusRound as PlusIcon,
   SaveOutlined as SaveIcon,
 } from "@vicons/material";
+import {
+  StudentGroup,
+  StudentGroupBindVO,
+  StudentGroupUnbindVO,
+  StudentGroupUpdateRelVO,
+  StudentWithGroupIdVO,
+} from "@/api/types/student-group";
+import { useRequest } from "alova";
 
 const message = useMessage();
 
@@ -28,6 +26,25 @@ const groupList = ref<(StudentGroup & { students: StudentWithGroupIdVO[] })[]>(
 
 /** 未分组 */
 const ungroupStudentList = ref<StudentWithGroupIdVO[]>([]);
+
+const { send: batchUpdateStudentGroupRel } = useRequest(
+  StudentGroupApi.batchUpdateStudentGroupRel,
+  {
+    immediate: false,
+  }
+);
+
+const {send: deleteStudentGroup} = useRequest(StudentGroupApi.deleteStudentGroup, {
+  immediate: false,
+});
+
+const {send: getStudentGroupList} = useRequest(StudentGroupApi.getStudentGroupList, {
+  immediate: false,
+});
+
+const {send: getAllStudentGroupMapping} = useRequest(StudentGroupApi.getAllStudentGroupMapping, {
+  immediate: false,
+});
 
 /** 保存分组关系 */
 const handleSave = async () => {
@@ -71,6 +88,8 @@ const handleSave = async () => {
     needUnbindList,
     needUpdateRelList,
   });
+
+  message.success("保存成功");
 };
 
 const editModalRef = ref<typeof EditModal>();
@@ -199,7 +218,9 @@ init();
 
       <!-- 底部栏 -->
       <n-layout-footer bordered>
-        <n-space class="px-3">拖拽以排序、右键以删除、点击分组名称以修改</n-space>
+        <n-space class="px-3"
+          >拖拽以排序、右键以删除、点击分组名称以修改</n-space
+        >
       </n-layout-footer>
     </n-layout>
 

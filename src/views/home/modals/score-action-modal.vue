@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ScoreType } from "@/api/score";
-import { Student } from "@/api/student";
+import { ScoreType } from "@/api/types/score";
+import { Student } from "@/api/types/student";
+import { useAppStore } from "@/store/modules/app";
 import { FormInst } from "naive-ui";
 
 export type Option = {
@@ -10,8 +11,9 @@ export type Option = {
   scoreTypeId: ScoreType["id"];
   scoreTypeName: ScoreType["name"];
   currentScore: number;
-  max: ScoreType["max"];
 };
+
+const appStore = useAppStore();
 
 const emit = defineEmits<{
   (
@@ -29,7 +31,6 @@ const state = ref<Option>({
   scoreTypeId: "",
   scoreTypeName: "",
   currentScore: 0,
-  max: 0,
 });
 
 const actionText = computed(() =>
@@ -52,11 +53,6 @@ const formRules = computed<any>(() => ({
     trigger: ["input", "blur"],
     message: `请输入${actionText.value}分分数`,
   },
-  // reason: {
-  //   required: true,
-  //   trigger: ["input", "blur"],
-  //   message: `请输入${actionText.value}分原因`,
-  // },
 }));
 
 // 弹窗相关
@@ -75,10 +71,10 @@ defineExpose({ open });
 <template>
   <n-modal
     v-model:show="visible"
-    class="w-3/5 max-w-100"
+    class="w-4/5 max-w-120"
     preset="card"
     :title="title"
-    size="medium"
+    :size="appStore.miniWindowMode ? 'small' : 'medium'"
     :bordered="false"
     :segmented="{
       content: false,
@@ -90,30 +86,49 @@ defineExpose({ open });
       :label-width="80"
       :model="formValue"
       :rules="formRules"
-      size="medium"
+      :size="appStore.miniWindowMode ? 'small' : 'medium'"
       label-placement="left"
     >
-      <n-form-item :label="`${actionText}分分数`" path="actionValue">
-        <n-input-number
-          v-model:value="formValue.actionValue"
-          :min="1"
-          :max="state.action === 'plus' ? state.max : state.currentScore"
-          :placeholder="`${actionText}多少分`"
-        />
-      </n-form-item>
-      <n-form-item :label="`${actionText}分原因`" path="reason">
-        <n-input
-          v-model:value="formValue.reason"
-          type="textarea"
-          :placeholder="`${actionText}分原因`"
-        />
-      </n-form-item>
+      <n-grid :cols="24" :x-gap="24">
+        <n-form-item-gi :span="24" label="操作">
+          <n-radio-group v-model:value="state.action" size="small">
+            <n-radio-button value="plus">加分</n-radio-button>
+            <n-radio-button value="minus">扣分</n-radio-button>
+          </n-radio-group>
+        </n-form-item-gi>
+
+        <n-form-item-gi
+          :span="24"
+          :label="`${actionText}分分数`"
+          path="actionValue"
+        >
+          <n-input-number
+            v-model:value="formValue.actionValue"
+            :min="1"
+            :placeholder="`${actionText}多少分`"
+          />
+        </n-form-item-gi>
+
+        <!-- <n-form-item-gi :span="24" :label="`${actionText}分原因`" path="reason">
+          <n-input
+            v-model:value="formValue.reason"
+            type="textarea"
+            :placeholder="`${actionText}分原因`"
+          />
+        </n-form-item-gi> -->
+      </n-grid>
+
       <n-space justify="end">
-        <n-button type="default" attr-type="button" @click="visible = false"
+        <n-button
+          type="default"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
+          attr-type="button"
+          @click="visible = false"
           >算了</n-button
         >
         <n-button
           :type="state.action === 'plus' ? 'primary' : 'error'"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
           attr-type="button"
           @click="
             async () => {

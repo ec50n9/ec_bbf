@@ -2,6 +2,7 @@
 import {
   FormatListBulletedRound as ScoreTypeIcon,
   AvTimerRound as TimerIcon,
+  GroupTwotone as GroupIcon,
 } from "@vicons/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
 // import { useDB } from "@/db";
@@ -69,7 +70,7 @@ const openGroupManagerWindow = () =>
 
     <n-button type="warning" secondary round @click="openGroupManagerWindow">
       <template #icon>
-        <n-icon><score-type-icon /></n-icon>
+        <n-icon><group-icon/></n-icon>
       </template>
       分组管理
     </n-button>
