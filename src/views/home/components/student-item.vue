@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Student } from "@/api/student";
+import { Student } from "@/api/types/student";
 import { NThing } from "naive-ui";
 
 defineProps<{

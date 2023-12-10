@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { ScoreType, ScoreTypeUpdateVO } from "@/apis/types/score";
+import { ScoreType, ScoreTypeUpdateVO } from "@/api/types/score";
 import {
   createScoreType,
   updateScoreType,
   getScoreTypeById,
-} from "@/apis/modules/score";
+} from "@/api/modules/score";
 import { useRequest } from "alova";
 import { FormInst } from "naive-ui";
 

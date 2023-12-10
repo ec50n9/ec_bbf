@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { Score, ScoreType } from "@/apis/types/score";
-import { Student } from "@/apis/types/student";
-import * as ScoreApi from "@/apis/modules/score";
-import * as StudentApi from "@/apis/modules/student";
+import { Score, ScoreType } from "@/api/types/score";
+import { Student } from "@/api/types/student";
+import * as ScoreApi from "@/api/modules/score";
+import * as StudentApi from "@/api/modules/student";
 import {
   DeleteOutlineRound as DeleteIcon,
   ModeOutlined as EditIcon,

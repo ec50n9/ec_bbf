@@ -5,7 +5,7 @@ import {
   ScoreType,
   ScoreTypeCreateVO,
   ScoreTypeUpdateVO,
-} from "@/apis/types/score";
+} from "@/api/types/score";
 import { request } from "..";
 
 /**

@@ -4,8 +4,8 @@ import {
   PushPinTwotone as PinOffIcon,
   PinOffTwotone as PinOnIcon,
 } from "@vicons/material";
-import * as StudentApi from "@/apis/modules/student";
-import { Student, StudentCreateVO, StudentQueryVO } from "@/apis/types/student";
+import * as StudentApi from "@/api/modules/student";
+import { Student, StudentCreateVO, StudentQueryVO } from "@/api/types/student";
 import QueryBar from "./bars/query-bar.vue";
 import PickNameBar from "./bars/pick-name-bar.vue";
 import ToolsBar from "./bars/tools-bar.vue";

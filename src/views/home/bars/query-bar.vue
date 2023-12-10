@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import * as StudentApi from "@/api/student";
+import { StudentQueryVO } from "@/api/types/student";
 import {
   PlusRound as PlusIcon,
   FileUploadOutlined as UploadIcon,
@@ -7,13 +7,13 @@ import {
 import { FormInst } from "naive-ui";
 
 const emit = defineEmits<{
-  (e: "query", params: StudentApi.StudentQueryVO): void;
+  (e: "query", params: StudentQueryVO): void;
   (e: "create"): void;
   (e: "import"): void;
 }>();
 
 /** 搜索表单 */
-const queryFormValue = ref<StudentApi.StudentQueryVO>({
+const queryFormValue = ref<StudentQueryVO>({
   name: "",
   stu_no: "",
 });

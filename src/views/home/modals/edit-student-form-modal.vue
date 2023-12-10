@@ -3,9 +3,9 @@ import {
   Student,
   StudentCreateVO,
   StudentUpdateVO,
-} from "@/apis/types/student";
+} from "@/api/types/student";
 import { FormInst, FormRules } from "naive-ui";
-import * as StudentApi from "@/apis/modules/student";
+import * as StudentApi from "@/api/modules/student";
 import { useRequest } from "alova";
 
 const emit = defineEmits<{

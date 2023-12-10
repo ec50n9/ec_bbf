@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ScoreType } from "@/api/score";
-import { Student } from "@/api/student";
+import { ScoreType } from "@/api/types/score";
+import { Student } from "@/api/types/student";
 import { FormInst } from "naive-ui";
 
 export type Option = {

@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { PlusRound as PlusIcon } from "@vicons/material";
-import { getScoreTypeList, deleteScoreType } from "@/apis/modules/score";
+import { getScoreTypeList, deleteScoreType } from "@/api/modules/score";
 import EditModal from "./components/edit-modal.vue";
 import { useRequest } from "alova";
 

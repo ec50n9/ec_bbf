@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import * as XLSX from "xlsx";
-import { StudentCreateVO } from "@/api/student";
 import { ArchiveOutline as ArchiveIcon } from "@vicons/ionicons5";
 import { UploadCustomRequestOptions } from "naive-ui";
+import { StudentCreateVO } from "@/api/types/student";
 
 const emit = defineEmits<{
   (e: "upload", studentList: StudentCreateVO[]): void;

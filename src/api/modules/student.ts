@@ -3,7 +3,7 @@ import {
   StudentCreateVO,
   StudentQueryVO,
   StudentUpdateVO,
-} from "@/apis/types/student";
+} from "@/api/types/student";
 import { request } from "..";
 
 /**
