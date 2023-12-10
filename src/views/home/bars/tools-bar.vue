@@ -2,7 +2,6 @@
 import {
   FormatListBulletedRound as ScoreTypeIcon,
   AvTimerRound as TimerIcon,
-  MyLocationRound as PickerIcon,
   GroupTwotone as GroupIcon,
 } from "@vicons/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
@@ -25,12 +24,6 @@ const openTimerWindow = () =>
   new WebviewWindow("timer", {
     title: "计时器",
     url: "/timer",
-  });
-
-const openPickerWindow = () =>
-  new WebviewWindow("picker", {
-    title: "选择器",
-    url: "/picker",
   });
 
 const openGroupManagerWindow = () =>
@@ -73,13 +66,6 @@ const openGroupManagerWindow = () =>
         <n-icon><timer-icon /></n-icon>
       </template>
       计时器
-    </n-button>
-
-    <n-button type="info" secondary round @click="openPickerWindow">
-      <template #icon>
-        <n-icon><picker-icon /></n-icon>
-      </template>
-      点名
     </n-button>
 
     <n-button type="warning" secondary round @click="openGroupManagerWindow">
