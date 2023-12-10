@@ -94,8 +94,8 @@ const handleActiveTabChange = (_tab: string) => {
 </script>
 
 <template>
-  <n-space class="p-3" vertical>
-    <n-el class="px-5 pt-1 pb-3 b rd-3">
+  <n-el class="p-3 box-border h-full flex flex-col of-auto" vertical>
+    <n-el class="sticky top-0 z-1 px-5 pt-1 pb-3 bg-white b rd-3">
       <n-tabs type="line" @update:value="handleActiveTabChange" animated>
         <n-tab-pane name="query" tab="查找">
           <!-- 搜索框 -->
@@ -246,7 +246,7 @@ const handleActiveTabChange = (_tab: string) => {
 
       <n-empty v-else class="pt-10" description="什么都没有" />
     </n-spin>
-  </n-space>
+  </n-el>
 
   <upload-modal ref="uploadModalRef" @upload="handleBatchCreateStudent" />
   <edit-student-form-modal

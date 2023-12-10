@@ -6,6 +6,9 @@ import {
   CheckCircleOutlineRound as CheckIcon,
 } from "@vicons/material";
 import { PickStatus } from "@/composables/pick";
+import { useAppStore } from "@/store/modules/app";
+
+const appStore = useAppStore();
 
 const props = defineProps<{
   pickStatus: PickStatus;
@@ -55,6 +58,7 @@ const handlePause = () => emit("pause");
         <n-button
           v-if="['idle', 'paused'].includes(pickStatus)"
           type="primary"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
           secondary
           round
           @click="handleRun"
@@ -67,6 +71,7 @@ const handlePause = () => emit("pause");
         <n-button
           v-if="['running'].includes(pickStatus)"
           type="info"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
           secondary
           round
           @click="handleSelect"
@@ -79,6 +84,7 @@ const handlePause = () => emit("pause");
         <n-button
           v-if="['running'].includes(pickStatus)"
           type="warning"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
           secondary
           round
           @click="handlePause"
@@ -91,6 +97,7 @@ const handlePause = () => emit("pause");
         <n-button
           v-if="pickStatus !== 'idle'"
           type="error"
+          :size="appStore.miniWindowMode ? 'small' : 'medium'"
           secondary
           round
           @click="handleReset"
