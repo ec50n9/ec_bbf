@@ -1,9 +1,5 @@
 <script lang="ts" setup>
-import {
-  Student,
-  StudentCreateVO,
-  StudentUpdateVO,
-} from "@/api/types/student";
+import { Student, StudentCreateVO, StudentUpdateVO } from "@/api/types/student";
 import { FormInst, FormRules } from "naive-ui";
 import * as StudentApi from "@/api/modules/student";
 import { useRequest } from "alova";

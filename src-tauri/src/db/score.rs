@@ -206,7 +206,7 @@ pub struct ScorePlusVO {
 pub fn add_score(
     state: tauri::State<'_, crate::AppState>,
     score_plus_vo: ScorePlusVO,
-) -> Result<(), String> {
+) -> Result<i64, String> {
     let conn = state.db_conn.lock().expect("获取数据库连接失败");
 
     let id = Uuid::new_v4().to_string();
@@ -221,7 +221,7 @@ pub fn add_score(
             "INSERT INTO student_score_record (id, student_id, score_type_id, action_value, reason) VALUES (?, ?, ?, ?, ?)",
         )
         .expect("sql预处理出错");
-    stmt.insert([
+    let rows = stmt.insert([
         id,
         student_id,
         score_type_id,
@@ -230,7 +230,7 @@ pub fn add_score(
     ])
     .expect("插入失败");
 
-    Ok(())
+    Ok(rows)
 }
 
 /// 分数查询出参

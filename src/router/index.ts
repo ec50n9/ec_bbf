@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
     path: "/timer",
     component: () => import("@/views/timer/index.vue"),
     meta: { title: "定时器" },
+  },
+  {
+    path: "/picker",
+    component: () => import("@/views/picker/index.vue"),
+    meta: { title: "选择器" },
   }
 ];
 

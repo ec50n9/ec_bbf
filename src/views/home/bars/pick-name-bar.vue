@@ -9,6 +9,7 @@ import { PickStatus } from "@/composables/pick";
 
 const props = defineProps<{
   pickStatus: PickStatus;
+  content?: string;
 }>();
 
 const emit = defineEmits<{
@@ -48,60 +49,64 @@ const handlePause = () => emit("pause");
 </script>
 
 <template>
-  <n-el class="px-1 pb-1">
-    <n-space align="center">
-      <n-button
-        v-if="['idle', 'paused'].includes(pickStatus)"
-        type="primary"
-        secondary
-        round
-        @click="handleRun"
-      >
-        <template #icon>
-          <n-icon><play-icon /></n-icon>
-        </template>
-        {{ runBtnText }}
-      </n-button>
-      <n-button
-        v-if="['running'].includes(pickStatus)"
-        type="info"
-        secondary
-        round
-        @click="handleSelect"
-      >
-        <template #icon>
-          <n-icon><check-icon /></n-icon>
-        </template>
-        抽取
-      </n-button>
-      <n-button
-        v-if="['running'].includes(pickStatus)"
-        type="warning"
-        secondary
-        round
-        @click="handlePause"
-      >
-        <template #icon>
-          <n-icon><pause-icon /></n-icon>
-        </template>
-        暂停
-      </n-button>
-      <n-button
-        v-if="pickStatus !== 'idle'"
-        type="error"
-        secondary
-        round
-        @click="handleReset"
-      >
-        <template #icon>
-          <n-icon><reset-icon /></n-icon>
-        </template>
-        重置
-      </n-button>
-    </n-space>
-    <n-space class="mt-3">
-      <n-checkbox v-model:checked="autoReset">可重复抽取</n-checkbox>
-      <n-checkbox v-model:checked="autoPause">自动暂停</n-checkbox>
-    </n-space>
+  <n-el class="px-1 pb-1 flex items-center justify-between gap-3">
+    <n-el>
+      <n-space align="center">
+        <n-button
+          v-if="['idle', 'paused'].includes(pickStatus)"
+          type="primary"
+          secondary
+          round
+          @click="handleRun"
+        >
+          <template #icon>
+            <n-icon><play-icon /></n-icon>
+          </template>
+          {{ runBtnText }}
+        </n-button>
+        <n-button
+          v-if="['running'].includes(pickStatus)"
+          type="info"
+          secondary
+          round
+          @click="handleSelect"
+        >
+          <template #icon>
+            <n-icon><check-icon /></n-icon>
+          </template>
+          抽取
+        </n-button>
+        <n-button
+          v-if="['running'].includes(pickStatus)"
+          type="warning"
+          secondary
+          round
+          @click="handlePause"
+        >
+          <template #icon>
+            <n-icon><pause-icon /></n-icon>
+          </template>
+          暂停
+        </n-button>
+        <n-button
+          v-if="pickStatus !== 'idle'"
+          type="error"
+          secondary
+          round
+          @click="handleReset"
+        >
+          <template #icon>
+            <n-icon><reset-icon /></n-icon>
+          </template>
+          重置
+        </n-button>
+      </n-space>
+      <n-space class="mt-3">
+        <n-checkbox v-model:checked="autoReset">可重复抽取</n-checkbox>
+        <n-checkbox v-model:checked="autoPause">自动暂停</n-checkbox>
+      </n-space>
+    </n-el>
+
+    <n-el v-if="content" class="shrink-0 text-3xl c-gray-7">{{ content }}</n-el>
   </n-el>
 </template>

@@ -3,6 +3,8 @@ import {
   RefreshRound as ResetIcon,
   PushPinTwotone as PinOffIcon,
   PinOffTwotone as PinOnIcon,
+  ZoomInMapRound as ZoomInIcon,
+  ZoomOutMapRound as ZoomOutIcon,
 } from "@vicons/material";
 import * as StudentApi from "@/api/modules/student";
 import { Student, StudentCreateVO, StudentQueryVO } from "@/api/types/student";
@@ -47,10 +49,9 @@ const handleEditStudent = (id: Student["id"]) => {
 };
 
 // 删除学生
-const { send: deleteStudent } = useRequest(
-  StudentApi.deleteStudent,
-  { immediate: false }
-);
+const { send: deleteStudent } = useRequest(StudentApi.deleteStudent, {
+  immediate: false,
+});
 const handleDeleteStudent = async (id: Student["id"]) => {
   await deleteStudent(id);
   message.success("删除成功");
@@ -58,7 +59,9 @@ const handleDeleteStudent = async (id: Student["id"]) => {
 };
 
 // 批量创建
-const { send: batchCreateStudent } = useRequest(StudentApi.batchCreateStudent, { immediate: false });
+const { send: batchCreateStudent } = useRequest(StudentApi.batchCreateStudent, {
+  immediate: false,
+});
 const handleBatchCreateStudent = async (studentList: StudentCreateVO[]) => {
   await batchCreateStudent(studentList);
   message.success("批量添加成功");
@@ -106,6 +109,14 @@ const handleActiveTabChange = (_tab: string) => {
           <!-- 点名框 -->
           <pick-name-bar
             :pick-status="picker.status.value"
+            :content="
+              studentIdMap.get(
+                picker.currentFocusValue.value ||
+                  Array.from(picker.selectedList.value.values())[
+                    picker.selectedList.value.size - 1
+                  ]
+              )?.name
+            "
             @run="picker.run"
             @pause="picker.pause"
             @select="picker.select"
@@ -118,26 +129,51 @@ const handleActiveTabChange = (_tab: string) => {
         </n-tab-pane>
 
         <template #suffix>
-          <n-tooltip trigger="hover" :delay="500">
-            <template #trigger>
-              <n-button
-                type="info"
-                :dashed="!appStore.isAlwaysOnTop"
-                :secondary="appStore.isAlwaysOnTop"
-                size="small"
-                circle
-                @click="appStore.toggleAlwaysOnTop"
-              >
-                <template #icon>
-                  <n-icon>
-                    <pin-on-icon v-if="appStore.isAlwaysOnTop" />
-                    <pin-off-icon v-else />
-                  </n-icon>
-                </template>
-              </n-button>
-            </template>
-            {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶窗口" }}
-          </n-tooltip>
+          <n-space>
+            <!-- 迷你模式 -->
+            <n-tooltip trigger="hover" :delay="500">
+              <template #trigger>
+                <n-button
+                  type="warning"
+                  :dashed="!appStore.miniWindowMode"
+                  :secondary="appStore.miniWindowMode"
+                  size="small"
+                  circle
+                  @click="appStore.toggleMiniWindowMode()"
+                >
+                  <template #icon>
+                    <n-icon>
+                      <zoom-out-icon v-if="appStore.miniWindowMode" />
+                      <zoom-in-icon v-else />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
+              {{ appStore.miniWindowMode ? "关闭迷你模式" : "开启迷你模式" }}
+            </n-tooltip>
+
+            <!-- 置顶 -->
+            <n-tooltip trigger="hover" :delay="500">
+              <template #trigger>
+                <n-button
+                  type="info"
+                  :dashed="!appStore.isAlwaysOnTop"
+                  :secondary="appStore.isAlwaysOnTop"
+                  size="small"
+                  circle
+                  @click="appStore.toggleAlwaysOnTop"
+                >
+                  <template #icon>
+                    <n-icon>
+                      <pin-on-icon v-if="appStore.isAlwaysOnTop" />
+                      <pin-off-icon v-else />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
+              {{ appStore.isAlwaysOnTop ? "取消置顶" : "置顶窗口" }}
+            </n-tooltip>
+          </n-space>
         </template>
       </n-tabs>
     </n-el>
@@ -150,7 +186,11 @@ const handleActiveTabChange = (_tab: string) => {
     </n-space> -->
 
     <!-- 已选择的学生列表 -->
-    <n-space v-if="picker.selectedList.value.size" align="center" class="mt-2">
+    <n-space
+      v-if="picker.selectedList.value.size || appStore.miniWindowMode"
+      align="center"
+      class="mt-2"
+    >
       <n-el>已选择的学生:</n-el>
       <n-tag
         v-for="studentId in picker.selectedList.value"
@@ -162,16 +202,34 @@ const handleActiveTabChange = (_tab: string) => {
       >
         {{ studentIdMap.get(studentId)?.name }}
       </n-tag>
-      <n-tag type="error" @click="picker.reset()">
+
+      <n-tag v-if="picker.currentFocusValue.value" type="warning">
+        {{ studentIdMap.get(picker.currentFocusValue.value)?.name }}
+      </n-tag>
+
+      <n-tag
+        v-if="picker.selectedList.value.size"
+        type="error"
+        @click="picker.reset()"
+      >
         <template #icon>
           <n-icon><reset-icon /></n-icon>
         </template>
         重置
       </n-tag>
+
+      <n-tag
+        v-if="
+          !picker.selectedList.value.size && !picker.currentFocusValue.value
+        "
+        class="c-gray-4"
+      >
+        一个都没有呢...
+      </n-tag>
     </n-space>
 
     <!-- 学生列表（flex布局 -->
-    <n-spin :show="studentListLoading">
+    <n-spin v-if="!appStore.miniWindowMode" :show="studentListLoading">
       <n-el
         v-if="studentList && studentList.length"
         class="mt-2 flex flex-wrap gap-3"

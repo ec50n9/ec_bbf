@@ -66,22 +66,25 @@ export const deleteScoreType = (id: ScoreType["id"]) =>
   );
 
 /**
- * 为学生加分
- *
- * @param scorePlusVo - 分数信息
- * @return 修改行数
- */
-export const addScore = (data: ScorePlusVO) =>
-  request.Post<number>("/add-score", data);
-
-/**
  * 根据学生的ID获取学生全部分数
  *
  * @param student_id - 学生的ID
  * @return 学生全部分数
  */
 export const getScoreListByStudentId = (studentId: string) =>
-  request.Get<Score[]>(`/score-list/${studentId}`);
+  request.Get<Score[]>(`/score-list/${studentId}`, {
+    name: "score",
+    hitSource: /^score/,
+  });
+
+/**
+ * 为学生加分
+ *
+ * @param scorePlusVo - 分数信息
+ * @return 修改行数
+ */
+export const addScore = (data: ScorePlusVO) =>
+  request.Post<number>("/add-score", data, { name: "score-add" });
 
 export const getDailyScoreByStudentId = (
   studentId: string,

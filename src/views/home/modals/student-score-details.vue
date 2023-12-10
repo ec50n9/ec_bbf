@@ -9,6 +9,9 @@ import {
 } from "@vicons/material";
 import ScoreActionModal from "./score-action-modal.vue";
 import { useRequest } from "alova";
+import { useAppStore } from "@/store/modules/app";
+
+const appStore = useAppStore();
 
 const emit = defineEmits<{
   (e: "delete", id: Student["id"]): void;
@@ -101,7 +104,7 @@ const handlePlus = async (
     class="w-4/5 max-w-120"
     preset="card"
     :title="studentInfo?.name"
-    size="medium"
+    :size="appStore.miniWindowMode ? 'small' : 'medium'"
     :bordered="false"
     :segmented="{
       content: false,
