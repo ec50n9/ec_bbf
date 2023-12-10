@@ -4,6 +4,8 @@ import { defineMock } from "@alova/mock";
 export default defineMock({
   "/students": ({ query }) =>
     invoke("get_student_list", { studentQueryVo: query }),
+  "/students-with-score": ({ query }) =>
+    invoke("get_student_list_with_score", { studentQueryVo: query }),
   "/students/{id}": ({ params }) => invoke("get_student_by_id", params),
   "[POST]/students": ({ data: studentCreateVo }) =>
     invoke("create_student", { studentCreateVo }),

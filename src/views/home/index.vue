@@ -24,13 +24,17 @@ const appStore = useAppStore();
 
 let queryParams: StudentQueryVO = {};
 
+// const {
+//   data: studentList,
+//   loading: studentListLoading,
+//   send: fetchStudentList,
+// } = useRequest(() => StudentApi.getStudentList(queryParams));
+
 const {
   data: studentList,
   loading: studentListLoading,
   send: fetchStudentList,
-} = useRequest(() => StudentApi.getStudentList(queryParams), {
-  immediate: true,
-});
+} = useRequest(() => StudentApi.getStudentListWithScore(queryParams));
 
 const studentIdMap = computed(
   () => new Map(studentList.value.map((student) => [student.id, student]))

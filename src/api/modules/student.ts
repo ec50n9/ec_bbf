@@ -3,6 +3,7 @@ import {
   StudentCreateVO,
   StudentQueryVO,
   StudentUpdateVO,
+  StudentWithScore,
 } from "@/api/types/student";
 import { request } from "..";
 
@@ -19,6 +20,19 @@ export const getStudentList = (query: StudentQueryVO) =>
       return acc;
     }, {} as Record<string, any>),
     name: "student-list",
+    hitSource: /^student/,
+  });
+
+/**
+ * 根据查询参数获取学生列表（带分数）
+ */
+export const getStudentListWithScore = (query: StudentQueryVO) =>
+  request.Get<StudentWithScore[]>("students-with-score", {
+    params: Object.entries(query).reduce((acc, [key, value]) => {
+      if (value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, any>),
+    name: "student-list-with-score",
     hitSource: /^student/,
   });
 

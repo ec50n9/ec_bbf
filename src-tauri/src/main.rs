@@ -32,6 +32,7 @@ fn main() {
                 create_student,
                 batch_create_student,
                 get_student_list,
+                get_student_list_with_score,
                 get_student_by_id,
                 update_student,
                 delete_student

@@ -64,6 +64,125 @@ pub fn get_student_list(
     Ok(students_iter.collect::<Vec<Student>>())
 }
 
+/// 学生带分数原始结构体
+#[derive(Serialize, Deserialize)]
+pub struct StudentScoreRaw {
+    id: String,
+    name: String,
+    stu_no: String,
+    score_type_id: String,
+    score_type_name: String,
+    score_type_color: Option<String>,
+    score_type_icon: Option<String>,
+    score: i32,
+}
+
+/// 分数（简单结构
+#[derive(Serialize, Deserialize)]
+pub struct StudentScoreSimp {
+    id: String,
+    name: String,
+    color: String,
+    score: i32,
+}
+
+/// 学生结构体（带分数
+#[derive(Serialize, Deserialize)]
+pub struct StudentWithScore {
+    id: String,
+    stu_no: String,
+    name: String,
+    score_list: Vec<StudentScoreSimp>,
+}
+
+/// 获取全部学生（带分数
+#[tauri::command]
+pub fn get_student_list_with_score(
+    state: tauri::State<'_, crate::AppState>,
+    student_query_vo: StudentQueryVO,
+) -> Result<Vec<StudentWithScore>, String> {
+    let conn = state.db_conn.lock().expect("获取数据库连接失败");
+
+    let StudentQueryVO { name, stu_no } = student_query_vo;
+
+    // 字段sql
+    let mut query_fields = Vec::new();
+    // 参数值
+    let mut params = Vec::new();
+
+    // 添加参数
+    query_fields.push("1 = 1");
+    if let Some(name) = name {
+        query_fields.push("s.name LIKE ?");
+        params.push(format!("%{}%", name));
+    }
+    if let Some(stu_no) = stu_no {
+        query_fields.push("s.stu_no LIKE ?");
+        params.push(format!("%{}%", stu_no));
+    }
+
+    let query_sql = format!(
+        "SELECT s.id                  as id,
+                s.stu_no              as stu_no,
+                s.name                as name,
+                st.id                 as score_type_id,
+                st.name               as score_type_name,
+                st.color              as score_type_color,
+                st.icon               as score_type_icon,
+                sum(ssr.action_value) as score
+        from student_score_record ssr
+                left join main.score_type st on st.id = ssr.score_type_id
+                left join main.student s on s.id = ssr.student_id
+        where st.name not null and {}
+        group by s.id, st.id;",
+        query_fields.join(" AND ")
+    );
+
+    let mut stmt = conn.prepare(&query_sql).expect("sql预处理出错");
+    let students = stmt
+        .query_map(params_from_iter(params.iter()), |row| {
+            Ok(StudentScoreRaw {
+                id: row.get(0)?,
+                stu_no: row.get(1)?,
+                name: row.get(2)?,
+                score_type_id: row.get(3)?,
+                score_type_name: row.get(4)?,
+                score_type_color: row.get(5)?,
+                score_type_icon: row.get(6)?,
+                score: row.get(7)?,
+            })
+        })
+        .expect("转换结果出错")
+        .map(|item| item.unwrap())
+        .collect::<Vec<StudentScoreRaw>>();
+
+    let student_with_score_list = students
+        .into_iter()
+        .fold(Vec::<StudentWithScore>::new(), |mut acc, item| {
+            let score = StudentScoreSimp {
+                id: item.score_type_id,
+                name: item.score_type_name,
+                color: item.score_type_color.unwrap_or_default(),
+                score: item.score,
+            };
+
+            if let Some(student) = acc.iter_mut().find(|student| student.id == item.id) {
+                student.score_list.push(score);
+            } else {
+                acc.push(StudentWithScore {
+                    id: item.id,
+                    stu_no: item.stu_no,
+                    name: item.name,
+                    score_list: vec![score],
+                });
+            }
+
+            acc
+        });
+
+    Ok(student_with_score_list)
+}
+
 /// 根据学生id获取学生信息
 #[tauri::command]
 pub fn get_student_by_id(
