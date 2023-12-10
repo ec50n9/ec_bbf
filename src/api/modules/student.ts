@@ -18,6 +18,8 @@ export const getStudentList = (query: StudentQueryVO) =>
       if (value) acc[key] = value;
       return acc;
     }, {} as Record<string, any>),
+    name: "student-list",
+    hitSource: /^student/,
   });
 
 /**
@@ -27,7 +29,7 @@ export const getStudentList = (query: StudentQueryVO) =>
  * @return 学生对象
  */
 export const getStudentById = (id: Student["id"]) =>
-  request.Get<Student>(`students/${id}`);
+  request.Get<Student>(`students/${id}`, { name: "student-by-id" });
 
 /**
  * 创建一个新的学生
@@ -36,7 +38,9 @@ export const getStudentById = (id: Student["id"]) =>
  * @return 一个包含一个学生ID的Promise
  */
 export const createStudent = (studentCreateVo: StudentCreateVO) =>
-  request.Post<Student["id"]>("students", { studentCreateVo });
+  request.Post<Student["id"]>("students", studentCreateVo, {
+    name: "student-create",
+  });
 
 /**
  * 批量创建学生
@@ -45,7 +49,9 @@ export const createStudent = (studentCreateVo: StudentCreateVO) =>
  * @return 一个包含多个学生ID的Promise
  */
 export const batchCreateStudent = (studentCreateVos: StudentCreateVO[]) =>
-  request.Post<Student["id"][]>("students/batch", { studentCreateVos });
+  request.Post<Student["id"][]>("students/batch", studentCreateVos, {
+    name: "student-batch-create",
+  });
 
 /**
  * 更新学生
@@ -54,7 +60,7 @@ export const batchCreateStudent = (studentCreateVos: StudentCreateVO[]) =>
  * @return 如果更新成功返回true,否则返回false
  */
 export const updateStudent = (studentUpdateVo: StudentUpdateVO) =>
-  request.Put<boolean>("students", { studentUpdateVo });
+  request.Put<boolean>("students", studentUpdateVo, { name: "student-update" });
 
 /**
  * 根据学生的ID删除学生。
@@ -63,4 +69,4 @@ export const updateStudent = (studentUpdateVo: StudentUpdateVO) =>
  * @return 如果删除成功返回true,否则返回false
  */
 export const deleteStudent = (id: Student["id"]) =>
-  request.Delete<boolean>(`students/${id}`);
+  request.Delete<boolean>(`students/${id}`, {}, { name: "student-delete" });
