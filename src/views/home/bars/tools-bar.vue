@@ -26,6 +26,12 @@ const openTimerWindow = () =>
     url: "/timer",
   });
 
+const openDecibleMeterWindow = () =>
+  new WebviewWindow("decible-meter", {
+    title: "分贝仪",
+    url: "/decible-meter",
+  });
+
 const openGroupManagerWindow = () =>
   new WebviewWindow("group-manager", {
     title: "分组管理",
@@ -61,6 +67,13 @@ const openGroupManagerWindow = () =>
       分数类型管理
     </n-button>
 
+    <n-button type="warning" secondary round @click="openGroupManagerWindow">
+      <template #icon>
+        <n-icon><group-icon /></n-icon>
+      </template>
+      分组管理
+    </n-button>
+
     <n-button type="info" secondary round @click="openTimerWindow">
       <template #icon>
         <n-icon><timer-icon /></n-icon>
@@ -68,11 +81,11 @@ const openGroupManagerWindow = () =>
       计时器
     </n-button>
 
-    <n-button type="warning" secondary round @click="openGroupManagerWindow">
+    <n-button type="info" secondary round @click="openDecibleMeterWindow">
       <template #icon>
-        <n-icon><group-icon/></n-icon>
+        <n-icon><timer-icon /></n-icon>
       </template>
-      分组管理
+      分贝仪
     </n-button>
   </n-space>
 </template>

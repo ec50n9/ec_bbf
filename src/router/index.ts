@@ -26,6 +26,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/timer/index.vue"),
     meta: { title: "定时器" },
   },
+  {
+    path: "/decible-meter",
+    component: () => import("@/views/decible-meter/index.vue"),
+    meta: { title: "分贝仪" },
+  },
 ];
 
 const router = createRouter({
