@@ -27,8 +27,8 @@ const routes: RouteRecordRaw[] = [
     meta: { title: "定时器" },
   },
   {
-    path: "/decible-meter",
-    component: () => import("@/views/decible-meter/index.vue"),
+    path: "/decibel-meter",
+    component: () => import("@/views/decibel-meter/index.vue"),
     meta: { title: "分贝仪" },
   },
 ];

@@ -19,6 +19,7 @@
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "pinia": "^2.1.7",
+    "pixi.js": "^7.3.2",
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1",
     "utc": "link:dayjs/plugin/utc",
     "vue": "^3.3.4",

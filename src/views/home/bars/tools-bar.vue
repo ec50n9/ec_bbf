@@ -26,10 +26,10 @@ const openTimerWindow = () =>
     url: "/timer",
   });
 
-const openDecibleMeterWindow = () =>
-  new WebviewWindow("decible-meter", {
+const opendecibelMeterWindow = () =>
+  new WebviewWindow("decibel-meter", {
     title: "分贝仪",
-    url: "/decible-meter",
+    url: "/decibel-meter",
   });
 
 const openGroupManagerWindow = () =>
@@ -81,7 +81,7 @@ const openGroupManagerWindow = () =>
       计时器
     </n-button>
 
-    <n-button type="info" secondary round @click="openDecibleMeterWindow">
+    <n-button type="info" secondary round @click="opendecibelMeterWindow">
       <template #icon>
         <n-icon><timer-icon /></n-icon>
       </template>
