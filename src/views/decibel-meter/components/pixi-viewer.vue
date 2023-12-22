@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import * as PIXI from "pixi.js";
+import { Button } from "@pixi/ui";
 
 const props = defineProps<{
   stream: MediaStream;
 }>();
 
 // 创建应用
-const rootWrapperEle = ref<HTMLDivElement>();
 const rootEle = ref<HTMLDivElement>();
-let app = new PIXI.Application({ background: "#ecfdf5", resizeTo: window });
+let app = new PIXI.Application({
+  background: "#ecfdf5",
+  resizeTo: window,
+  resolution: window.devicePixelRatio || 1,
+});
 onMounted(() => {
   setup(app, props.stream);
 
@@ -18,8 +22,6 @@ onMounted(() => {
     app.destroy();
   };
 });
-
-const easeInCubic = (x: number) => x * x * x;
 
 const decibel2text = (decibel: number) => {
   if (decibel < 100) return "就这？啊？";
@@ -42,13 +44,13 @@ const setup = (app: PIXI.Application, stream: MediaStream) => {
   const dataArray = new Uint8Array(bufferLength);
 
   // 绘制矩形
-  const obj = new PIXI.Graphics();
-  obj.beginFill(0xff0000);
-  obj.drawCircle(0, 0, 100);
-  app.stage.addChild(obj);
+  const centerCircle = new PIXI.Graphics();
+  centerCircle.beginFill("#d1fae5");
+  centerCircle.drawCircle(app.screen.width / 2, app.screen.height / 2, 100);
+  app.stage.addChild(centerCircle);
 
   // 绘制文本
-  const basicText = new PIXI.Text("Hello World", {
+  const centerText = new PIXI.Text("Hello World", {
     align: "center",
     fontFamily: "Arial",
     fontSize: 36,
@@ -61,33 +63,44 @@ const setup = (app: PIXI.Application, stream: MediaStream) => {
     dropShadowDistance: 3,
     lineJoin: "round",
   });
-  app.stage.addChild(basicText);
+  app.stage.addChild(centerText);
 
-  let time = 0;
+  // 按钮
+  const container = new PIXI.Container();
+  const button = new Button(
+    new PIXI.Graphics().beginFill(0xffffff).drawRoundedRect(0, 0, 100, 50, 15)
+  );
+  button.onPress.connect(() => {
+    console.log("hello");
+  });
+  container.addChild(button.view);
+  app.stage.addChild(container);
 
-  app.ticker.add((delta) => {
-    // time += delta;
-    // if (time > 5) time = 0;
-    // else return;
-
+  app.ticker.add((_delta) => {
     analyser.getByteFrequencyData(dataArray);
-    // const decibelValue = Math.max(...dataArray);
-    const decibelValue = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-    // console.log(easeInCubic((avg / 255) * 10));
+    const decibelValue =
+      dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
 
-    basicText.text = decibel2text(decibelValue);
-    const fontSize = decibelValue / 50 * 80
-    basicText.style.fontSize = `${fontSize}px`;
-    basicText.position.set(
-      (app.screen.width - basicText.width) / 2,
-      (app.screen.height - basicText.height) / 2
+    centerCircle.clear();
+    centerCircle.beginFill("#d1fae5");
+    centerCircle.drawCircle(
+      app.screen.width / 2,
+      app.screen.height / 2,
+      100 + (decibelValue / 255) * 700
+    );
+
+    centerText.text = decibelValue.toFixed(0);
+    // basicText.text = decibel2text(decibelValue);
+    const fontSize = (decibelValue / 255) * 100;
+    centerText.style.fontSize = `${fontSize}px`;
+    centerText.position.set(
+      (app.screen.width - centerText.width) / 2,
+      (app.screen.height - centerText.height) / 2
     );
   });
 };
 </script>
 
 <template>
-  <div ref="rootWrapperEle" class="w-full h-full bg-red-1">
-    <div ref="rootEle"></div>
-  </div>
+  <div ref="rootEle"></div>
 </template>
